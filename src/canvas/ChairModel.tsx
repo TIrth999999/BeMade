@@ -88,8 +88,6 @@ export const ChairModel = observer(() => {
                 } else if (child.name.includes("Top")) {
                     child.material = materials.top;
                 }
-                child.castShadow = true;
-                child.receiveShadow = true;
             });
         });
     }, [chairs, materials]);

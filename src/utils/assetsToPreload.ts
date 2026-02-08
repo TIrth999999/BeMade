@@ -36,6 +36,5 @@ export const getAssetsToPreload = () => {
         if (c.previewUrl) images.push(c.previewUrl);
     });
 
-    // Filter out potential duplicates or undefined
     return Array.from(new Set(images.filter(Boolean)));
 };
