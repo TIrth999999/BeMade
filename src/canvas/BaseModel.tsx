@@ -3,6 +3,15 @@ import { useGLTF, useTexture } from "@react-three/drei";
 import { useStore } from "../context/StoreContext";
 import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
+import baseShapes from "../data/baseShapes.json";
+
+// Preload all base shape models
+baseShapes.forEach(shape => {
+  useGLTF.preload(shape.glbUrl);
+  if (shape.smallGlbUrl) {
+    useGLTF.preload(shape.smallGlbUrl);
+  }
+});
 
 export const BaseModel = observer(() => {
   const { baseStore, dimensionsStore } = useStore();

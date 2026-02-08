@@ -4,8 +4,19 @@ import { DesignPage } from "./ui/DesignPage";
 import { Checkout } from "./ui/Components/Checkout";
 import "./App.css";
 import { observer } from "mobx-react-lite";
+import { useAssetPreloader } from "./utils/useAssetPreloader";
+import { getAssetsToPreload } from "./utils/assetsToPreload";
+import { LoadingScreen } from "./ui/Components/LoadingScreen";
+
+const assets = getAssetsToPreload();
 
 export default observer(function App() {
+  const { imagesLoaded } = useAssetPreloader(assets);
+
+  if (!imagesLoaded) {
+    return <LoadingScreen />;
+  }
+
   return (
     <StoreProvider>
       <Router>

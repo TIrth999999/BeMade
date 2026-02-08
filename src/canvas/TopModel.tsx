@@ -3,6 +3,13 @@ import { useStore } from "../context/StoreContext";
 import { useGLTF, useTexture } from "@react-three/drei";
 import * as THREE from "three";
 import { useEffect } from "react";
+import topShapes from "../data/topShapes.json";
+
+// Preload all top shape models
+topShapes.forEach(shape => {
+  useGLTF.preload(shape.glbUrl);
+  useGLTF.preload(shape.mdfUrl);
+});
 
 export const TopModel = observer(() => {
   const { topShapeStore, topColorStore, dimensionsStore } = useStore();

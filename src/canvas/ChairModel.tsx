@@ -4,6 +4,12 @@ import { useStore } from "../context/StoreContext";
 import { useMemo, useLayoutEffect } from "react";
 import * as THREE from "three";
 import { useChairPositions } from "../utils/useChairPositions";
+import chairData from "../data/chairData.json";
+
+// Preload all chair models
+chairData.forEach(chair => {
+    useGLTF.preload(chair.glbUrl);
+});
 
 export const ChairModel = observer(() => {
     const { chairStore } = useStore();
