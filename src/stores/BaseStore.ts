@@ -1,4 +1,4 @@
-import baseShapes from "..//data/baseShapes.json"
+import baseShapes from "../data/baseShapes.json"
 import { makeAutoObservable, reaction } from "mobx"
 import { RootStore } from "./RootStore";
 import type { BaseShape } from "../types";

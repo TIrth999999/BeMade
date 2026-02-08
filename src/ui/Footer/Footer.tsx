@@ -1,6 +1,6 @@
-import "../App.css";
+import "../../App.css";
 import { observer } from "mobx-react-lite";
-import { useStore } from "../context/StoreContext";
+import { useStore } from "../../context/StoreContext";
 
 export const Footer = observer(() => {
 
@@ -22,15 +22,15 @@ export const Footer = observer(() => {
                     <span>{baseStore.selectedBase.name}</span>
                 </div>
                 <div className="footer-item">
-                    <label>Base Colour</label>
+                    <label>Table Base Colour</label>
                     <span>{baseStore.selectedBaseColor.name}</span>
                 </div>
                 <div className="footer-item">
                     <label>Dimensions (mm)</label>
-                    {topShapeStore.selectedTopShape.id === "roundCircle" || topShapeStore.selectedTopShape.id === "square" ? <span>{dimensionsStore.length}</span> : <span>{dimensionsStore.length} × {dimensionsStore.width}</span>}
+                    {topShapeStore.selectedTopShape.id === "roundCircle" || topShapeStore.selectedTopShape.id === "square" ? <span>{dimensionsStore.length}</span> : <span>{dimensionsStore.length}×{dimensionsStore.width}</span>}
                 </div>
                 <div className="footer-item">
-                    <label>Top Shape</label>
+                    <label>Table Top Shape</label>
 
                     <span>{topShapeStore.selectedTopShape.name}</span>
                 </div>

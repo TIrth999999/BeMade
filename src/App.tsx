@@ -1,7 +1,7 @@
 import { StoreProvider } from "./context/StoreContext";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { DesignPage } from "./ui/DesignPage";
-import { Checkout } from "./ui/Checkout";
+import { Checkout } from "./ui/Components/Checkout";
 import "./App.css";
 import { observer } from "mobx-react-lite";
 

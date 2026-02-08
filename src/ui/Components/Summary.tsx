@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import { useStore } from "../context/StoreContext";
+import { useStore } from "../../context/StoreContext";
 import { useNavigate, useLocation } from "react-router-dom";
 
 export const Summary = observer(() => {
@@ -49,7 +49,7 @@ export const Summary = observer(() => {
                 <span className="summary-value">
                     {["round", "roundCircle", "square"].includes(topShapeStore.selectedTopShape.id)
                         ? `Diameter: ${dimensionsStore.length} mm`
-                        : `${dimensionsStore.length} × ${dimensionsStore.width} mm`
+                        : `Length: ${dimensionsStore.length} mm × Width: ${dimensionsStore.width} mm`
                     }
                 </span>
             </div>

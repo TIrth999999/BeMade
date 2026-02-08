@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import { useStore } from "../context/StoreContext";
+import { useStore } from "../../context/StoreContext";
 
 export const TopShapeSelector = observer(() => {
   const { baseStore, topShapeStore } = useStore();

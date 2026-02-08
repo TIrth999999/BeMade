@@ -1,4 +1,3 @@
-
 export type BaseShape = {
   id: string;
   name: string;

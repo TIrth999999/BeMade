@@ -1,4 +1,4 @@
-import chairData from "..//data/chairData.json"
+import chairData from "../data/chairData.json"
 import { makeAutoObservable, reaction } from "mobx"
 import { RootStore } from "./RootStore";
 import type { Chair } from "../types";

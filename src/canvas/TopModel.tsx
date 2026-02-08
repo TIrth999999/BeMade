@@ -7,11 +7,11 @@ import { useEffect } from "react";
 export const TopModel = observer(() => {
   const { topShapeStore, topColorStore, dimensionsStore } = useStore();
 
-  const gltf = useGLTF(topShapeStore.selectedTopShape.glbUrl);
-  // console.log(gltf.scene);
-  const gltf2 = useGLTF(topShapeStore.selectedTopShape.mdfUrl);
+  const shape = topShapeStore.selectedTopShape;
   const color = topColorStore.selectedColor;
 
+  const gltf = useGLTF(shape.glbUrl);
+  const gltf2 = useGLTF(shape.mdfUrl);
 
   const textures = useTexture({
     map: color.baseUrl,
@@ -22,57 +22,45 @@ export const TopModel = observer(() => {
 
   textures.map.colorSpace = THREE.SRGBColorSpace;
   textures.map.anisotropy = 16;
-
-
   textures.normalMap.colorSpace = THREE.LinearSRGBColorSpace;
   textures.roughnessMap.colorSpace = THREE.LinearSRGBColorSpace;
   textures.metalnessMap.colorSpace = THREE.LinearSRGBColorSpace;
-
 
   Object.values(textures).forEach((texture) => {
     texture.flipY = false;
   });
 
   useEffect(() => {
-    gltf.scene.traverse((child: any) => {
-      if (child.isMesh) {
-        child.castShadow = true;
-        child.receiveShadow = true;
+    const applyMaterial = (scene: THREE.Group, metalness: number) => {
+      scene.traverse((child: any) => {
+        if (child.isMesh) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+          child.material = new THREE.MeshStandardMaterial({
+            map: textures.map,
+            normalMap: textures.normalMap,
+            roughnessMap: textures.roughnessMap,
+            metalnessMap: textures.metalnessMap,
+            metalness: metalness,
+            roughness: 0.5,
+          });
+          child.material.needsUpdate = true;
+        }
+      });
+    };
 
-        child.material = new THREE.MeshStandardMaterial({
-          map: textures.map,
-          normalMap: textures.normalMap,
-          roughnessMap: textures.roughnessMap,
-          metalnessMap: textures.metalnessMap,
-          metalness: 0.8,
-          roughness: 0.5,
-        });
-
-        child.material.needsUpdate = true;
-      }
-    });
-
-    gltf2.scene.traverse((child: any) => {
-      if (child.isMesh) {
-        child.castShadow = true;
-        child.receiveShadow = true;
-
-        child.material = new THREE.MeshStandardMaterial({
-          map: textures.map,
-          normalMap: textures.normalMap,
-          roughnessMap: textures.roughnessMap,
-          metalnessMap: textures.metalnessMap,
-          metalness: 1,
-          roughness: 0.5,
-        });
-
-        child.material.needsUpdate = true;
-      }
-    });
+    applyMaterial(gltf.scene, 0.8);
+    applyMaterial(gltf2.scene, 1);
   }, [gltf, gltf2, textures]);
 
+  const scale: [number, number, number] = [
+    dimensionsStore.length / shape.defaultLength,
+    1,
+    dimensionsStore.width / shape.defaultWidth
+  ];
+
   return <>
-    <primitive object={gltf.scene} scale={[dimensionsStore.length / topShapeStore.selectedTopShape.defaultLength, 1, dimensionsStore.width / topShapeStore.selectedTopShape.defaultWidth]} />
-    <primitive object={gltf2.scene} scale={[dimensionsStore.length / topShapeStore.selectedTopShape.defaultLength, 1, dimensionsStore.width / topShapeStore.selectedTopShape.defaultWidth]} />
+    <primitive object={gltf.scene} scale={scale} />
+    <primitive object={gltf2.scene} scale={scale} />
   </>;
 });

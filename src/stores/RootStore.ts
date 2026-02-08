@@ -4,6 +4,7 @@ import { TopColorStore } from "./TopColorStore";
 import { TopShapeStore } from "./TopShapeStore";
 import { DimensionsStore } from "./DimensionsStore";
 import { ChairStore } from "./ChairStore";
+import { UIStore } from "./UIStore";
 import { makeAutoObservable } from "mobx";
 
 export class RootStore {
@@ -13,16 +14,16 @@ export class RootStore {
   topShapeStore: TopShapeStore;
   dimensionsStore: DimensionsStore;
   chairStore: ChairStore;
+  uiStore: UIStore;
 
   constructor() {
-
     this.baseStore = new BaseStore(this);
     this.colorStore = new ColorStore(this);
     this.topColorStore = new TopColorStore(this);
     this.dimensionsStore = new DimensionsStore(this);
     this.topShapeStore = new TopShapeStore(this);
     this.chairStore = new ChairStore(this);
+    this.uiStore = new UIStore(this);
     makeAutoObservable(this);
   }
-
 }

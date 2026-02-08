@@ -9,11 +9,11 @@ export const ChairModel = observer(() => {
     const { chairStore } = useStore();
     const positions = useChairPositions();
 
-    // Load the model based on the selected chair's URL
-    const gltf = useGLTF(chairStore.selectedChair.glbUrl);
-
-    // Load textures
+    const shape = chairStore.selectedChair;
     const color = chairStore.selectedColor;
+
+    const gltf = useGLTF(shape.glbUrl);
+
     const texturesLeg = useTexture({
         map: color.chairLegColor,
         normalMap: color.chairLegNormal,
@@ -28,7 +28,6 @@ export const ChairModel = observer(() => {
         roughnessMap: color.chairTopRoughness
     });
 
-    // Configure textures
     useMemo(() => {
         const setupTexture = (t: any) => {
             t.colorSpace = THREE.SRGBColorSpace;
@@ -51,7 +50,6 @@ export const ChairModel = observer(() => {
         setupLinearTexture(texturesTop.metalnessMap);
     }, [texturesLeg, texturesTop]);
 
-    // Create shared materials
     const materials = useMemo(() => {
         const legMat = new THREE.MeshStandardMaterial({
             map: texturesLeg.map,
@@ -84,17 +82,19 @@ export const ChairModel = observer(() => {
                 } else if (child.name.includes("Top")) {
                     child.material = materials.top;
                 }
+                child.castShadow = true;
+                child.receiveShadow = true;
             });
         });
     }, [chairs, materials]);
 
     return (
-        <group key={chairStore.selectedChair.id}>
+        <group>
             {chairs.map((scene, i) => {
                 const transform = positions[i] || { position: [0, 0, 0], rotation: [0, 0, 0] };
                 return (
                     <primitive
-                        key={`${chairStore.selectedChair.id}-${i}`}
+                        key={`chair-${shape.id}-${i}`}
                         object={scene}
                         position={transform.position}
                         rotation={transform.rotation}

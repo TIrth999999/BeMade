@@ -1,17 +1,15 @@
 import { observer } from "mobx-react-lite";
-import { useStore } from "../context/StoreContext";
+import { useStore } from "../../context/StoreContext";
 import { Summary } from "./Summary";
 
 export const ChairSelector = observer(() => {
     const { chairStore } = useStore();
 
-    // Use centralized max limit
     const maxLimit = chairStore.maxChairs;
     const isMaxReached = chairStore.count >= maxLimit;
 
     return (
         <div className="panel-section">
-            <h3 className="panel-title">Choose Chair</h3>
 
             <div className="card-grid">
                 {chairStore.chairs.map(c => (

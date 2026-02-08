@@ -1,9 +1,9 @@
-import { BaseSelector } from "./BaseSelector";
-import { ColorSelector } from "./ColorSelector";
-import { TopShapeSelector } from "./TopShapeSelector";
-import { DimensionControls } from "./DimensionControls";
-import { TopColorSelector } from "./TopColorSelector";
-import { ChairSelector } from "./ChairSelector";
+import { BaseSelector } from "./Components/BaseSelector";
+import { ColorSelector } from "./Components/ColorSelector";
+import { TopShapeSelector } from "./Components/TopShapeSelector";
+import { DimensionControls } from "./Components/DimensionControls";
+import { TopColorSelector } from "./Components/TopColorSelector";
+import { ChairSelector } from "./Components/ChairSelector";
 
 export const RightPanel = () => {
   return (

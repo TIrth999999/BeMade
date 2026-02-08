@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import { useStore } from "../context/StoreContext";
+import { useStore } from "../../context/StoreContext";
 
 export const TopColorSelector = observer(() => {
   const { topColorStore } = useStore();

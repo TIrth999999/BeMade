@@ -1,10 +1,10 @@
 import { observer } from "mobx-react-lite";
 import { Summary } from "./Summary";
-import { SampleSummary } from "./SampleSummary";
+import { SampleSummary } from "../Others/SampleSummary";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Navbar } from "./Navbar";
+import { CheckoutNavbar } from "../Navbars/CheckoutNavbar";
 import { useState } from "react";
-import { TermsModal } from "./TermsModal";
+import { TermsModal } from "../Modals/TermsModal";
 
 interface LocationState {
     isSampleOrder?: boolean;
@@ -35,7 +35,7 @@ export const Checkout = observer(() => {
 
     return (
         <>
-            <Navbar />
+            <CheckoutNavbar />
             <div className="checkout-page">
                 <div className="checkout-content">
                     <div className="checkout-left">
@@ -114,7 +114,9 @@ export const Checkout = observer(() => {
                             </div>
 
                             <div className="important-notice">
-                                <strong>i IMPORTANT</strong>
+                                <div className="notice-icon-header">
+                                    <strong>IMPORTANT</strong>
+                                </div>
                                 <p>
                                     Due to the bespoke nature of your order, we can only provide 48 hours after placing your order, where you may cancel or make any changes before production process begins. After this point, cancellations and amendments will not be possible.
                                 </p>
@@ -123,12 +125,14 @@ export const Checkout = observer(() => {
                     </div>
 
                     <div className="checkout-right">
-                        <div className="checkout-preview-image">
-                            {/* Placeholder for table image */}
-                            <div style={{ width: '100%', height: '240px', background: 'linear-gradient(135deg, #e0e0e0 0%, #f5f5f5 100%)', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999', marginBottom: '0' }}>
-                                <img src="/assets/preview-placeholder.png" alt="Table Preview" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', opacity: 0.5 }} onError={(e) => e.currentTarget.style.display = 'none'} />
+                        {!isSampleOrder && (
+                            <div className="checkout-preview-image">
+                                {/* Placeholder for table image */}
+                                <div style={{ width: '100%', height: '240px', background: 'linear-gradient(135deg, #e0e0e0 0%, #f5f5f5 100%)', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999', marginBottom: '0' }}>
+                                    <img src="/assets/preview-placeholder.png" alt="Table Preview" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', opacity: 0.5 }} onError={(e) => e.currentTarget.style.display = 'none'} />
+                                </div>
                             </div>
-                        </div>
+                        )}
 
                         <div className="checkout-summary-wrapper">
                             {isSampleOrder ? (

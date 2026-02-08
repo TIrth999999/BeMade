@@ -32,8 +32,8 @@ export const SampleSummary = observer(({ samples, totalPrice }: SampleSummaryPro
                             <img src={sample.sample_previewUrl} alt={sample.name} />
                         </div>
                         <div className="sample-summary-info">
-                            <span className="sample-summary-name">{sample.name}</span>
-                            <span className="sample-summary-category">({sample.className})</span>
+                            <div className="sample-summary-name">{sample.name}</div>
+                            <div className="sample-summary-category">({sample.className})</div>
                         </div>
                     </div>
                 ))}

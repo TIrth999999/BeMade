@@ -10,26 +10,17 @@ export const useChairPositions = (): ChairTransform[] => {
     const { chairStore, dimensionsStore, topShapeStore } = useStore();
 
     const count = chairStore.count;
-    // Current code divides by 1000 for meters, keeping that consistent.
-    // User snippet used `tableTop.length / 2000` for half length (so length/2 / 1000).
-    // Our store has length in mm? Let's check existing code.
-    // Existing: const length = dimensionsStore.length / 1000;
-    // So `length` here is in meters.
-    // User snippet: `halfX = tableTop.length / 2000`. If tableTop.length is mm. 
-    // effectively `halfX = (length_mm / 1000) / 2` = `length_m / 2`.
 
-    const length = dimensionsStore.length; // in mm
-    const width = dimensionsStore.width;   // in mm
+    const length = dimensionsStore.length;
+    const width = dimensionsStore.width;
     const shapeId = topShapeStore.selectedTopShape.id;
 
-    // Chair offset from user snippet
     const chairOffset = 0.45;
 
     const positions = useMemo(() => {
         const transforms: ChairTransform[] = [];
         if (count === 0) return transforms;
 
-        // Helper structs
         type SeatDistribution = {
             longSide: number;
             shortSide: number;
@@ -46,9 +37,7 @@ export const useChairPositions = (): ChairTransform[] => {
         };
 
         const computeCircleChairs = () => {
-            // User snippet: radius = tableTop.length / 2000 + chairOffset;
-            // Here we use width for round tables usually (diameter). 
-            // Existing code used `width / 2`. Let's assume width is Diameter.
+
             const radius = (width / 2000) + chairOffset;
             const step = (Math.PI * 2) / count;
 
@@ -67,16 +56,9 @@ export const useChairPositions = (): ChairTransform[] => {
         const computeRectangleLikeChairs = () => {
             const { longSide, shortSide } = resolveSeatDistribution(count);
 
-            // Half dimensions in meters
             const halfX = length / 2000;
             const halfZ = width / 2000;
             const o = chairOffset;
-
-            // Spacing based on Segment Center (Length / N)
-            // This pulls chairs away from each other compared to 1/(N+1) padding on small tables.
-            // Width of usable area = halfX * 2.
-            // Segment Width = (halfX * 2) / longSide.
-            // Center of segment i = Start + (SegmentWidth * i) + (SegmentWidth / 2)
 
             const segmentWidth = (halfX * 2) / longSide;
 
@@ -100,13 +82,11 @@ export const useChairPositions = (): ChairTransform[] => {
 
             // 3. Short sides (Heads)
             if (shortSide === 1) {
-                // Right Head (Positive X)
                 transforms.push({
                     position: [halfX + o, 0, 0],
                     rotation: [0, -Math.PI / 2, 0],
                 });
 
-                // Left Head (Negative X)
                 transforms.push({
                     position: [-halfX - o, 0, 0],
                     rotation: [0, Math.PI / 2, 0],
@@ -115,34 +95,15 @@ export const useChairPositions = (): ChairTransform[] => {
         };
 
         const distributeSquareChairs = (total: number) => {
-            // Return counts for [Top, Bottom, Right, Left]
-            // Prioritize opposite sides (Top/Bottom, then Right/Left)
-            // Total 1: [1, 0, 0, 0]
-            // Total 2: [1, 1, 0, 0]
-            // Total 3: [1, 1, 1, 0]
-            // Total 4: [1, 1, 1, 1]
-            // Total 5: [2, 1, 1, 1] ? Or [2, 2, 1, 0]?
-            // Let's assume user wants pairs if possible.
-            // But UI allows +=2. So usually 2, 4, 6, 8.
-            // 2: 1 Top, 1 Bottom.
-            // 4: 1 Top, 1 Bottom, 1 Right, 1 Left.
-            // 6: 2 Top, 2 Bottom, 1 Right, 1 Left.
-            // 8: 2 Top, 2 Bottom, 2 Right, 2 Left.
 
-            // Base distribution: total / 4 (floor).
             const base = Math.floor(total / 4);
             const remainder = total % 4;
 
-            // Remainder handling:
-            // 1: Top (+1)
-            // 2: Top (+1), Bottom (+1)
-            // 3: Top (+1), Bottom (+1), Right (+1)
+            const counts = [base, base, base, base];
 
-            const counts = [base, base, base, base]; // Top, Bottom, Right, Left
-
-            if (remainder >= 1) counts[0]++; // Top
-            if (remainder >= 2) counts[1]++; // Bottom (Opposite)
-            if (remainder >= 3) counts[2]++; // Right (Side)
+            if (remainder >= 1) counts[0]++;
+            if (remainder >= 2) counts[1]++;
+            if (remainder >= 3) counts[2]++;
 
             return counts;
         };
@@ -153,12 +114,6 @@ export const useChairPositions = (): ChairTransform[] => {
 
             const [topCount, bottomCount, rightCount, leftCount] = distributeSquareChairs(count);
 
-            // Note: We need to push EXACTLY `count` transforms in the order we want them consumed.
-            // Since distributeSquareChairs accounts for `count`, the sum of counts equals `count`.
-            // The existing `ChairModel` uses `position[i]`, so order matters ONLY if we had extra chairs.
-            // Here we generate exactly `count`.
-
-            // Top (Z negative)
             if (topCount > 0) {
                 const seg = (half * 2) / topCount;
                 for (let i = 0; i < topCount; i++) {
@@ -170,19 +125,10 @@ export const useChairPositions = (): ChairTransform[] => {
                 }
             }
 
-            // Bottom (Z positive) -- Prioritize filling opposite!
-            // Wait, does order in array matter? 
-            // If count=2, we have Top=1, Bottom=1.
-            // Push Top, Push Bottom. Array = [TopTheoryPos, BottomTheoryPos].
-            // ChairModel renders chair 0 at Top, chair 1 at Bottom.
-            // Correct.
-
             if (bottomCount > 0) {
                 const seg = (half * 2) / bottomCount;
                 for (let i = 0; i < bottomCount; i++) {
-                    // Start from right to left or left to right? 
-                    // Usually doesn't matter for symmetry if centered.
-                    // Left (-half) to Right (+half)
+
                     const x = -half + (seg * i) + (seg / 2);
                     transforms.push({
                         position: [x, 0, half + o],
@@ -191,7 +137,6 @@ export const useChairPositions = (): ChairTransform[] => {
                 }
             }
 
-            // Right (X positive)
             if (rightCount > 0) {
                 const seg = (half * 2) / rightCount;
                 for (let i = 0; i < rightCount; i++) {
@@ -203,7 +148,6 @@ export const useChairPositions = (): ChairTransform[] => {
                 }
             }
 
-            // Left (X negative)
             if (leftCount > 0) {
                 const seg = (half * 2) / leftCount;
                 for (let i = 0; i < leftCount; i++) {
@@ -224,7 +168,7 @@ export const useChairPositions = (): ChairTransform[] => {
                 computeRectangleLikeChairs();
                 break;
             case "round":
-            case "roundCircle": // Matching existing ID
+            case "roundCircle":
                 computeCircleChairs();
                 break;
             case "square":

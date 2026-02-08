@@ -1,3 +1,4 @@
+import { Suspense, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
 import { BaseModel } from "./BaseModel";
 import { TopModel } from "./TopModel";
@@ -6,8 +7,33 @@ import * as THREE from 'three';
 import { CameraSetup } from "./Camera";
 import { ChairModel } from "./ChairModel";
 import { observer } from "mobx-react-lite";
+import { useStore } from "../context/StoreContext";
 
+const BaseLoadingHandler = observer(() => {
+  const { uiStore } = useStore();
+  useEffect(() => {
+    uiStore.setBaseLoading(true);
+    return () => uiStore.setBaseLoading(false);
+  }, [uiStore]);
+  return null;
+});
 
+const TopLoadingHandler = observer(() => {
+  const { uiStore } = useStore();
+  useEffect(() => {
+    uiStore.setTopLoading(true);
+    return () => uiStore.setTopLoading(false);
+  }, [uiStore]);
+  return null;
+});
+const ChairLoadingHandler = observer(() => {
+  const { uiStore } = useStore();
+  useEffect(() => {
+    uiStore.setChairLoading(true);
+    return () => uiStore.setChairLoading(false);
+  }, [uiStore]);
+  return null;
+});
 export const CanvasRoot = observer(() => {
   return (
     <Canvas shadows dpr={[1, 2]} camera={{ fov: 75 }}
@@ -49,9 +75,15 @@ export const CanvasRoot = observer(() => {
         distance={15}
       />
 
-      <BaseModel />
-      <TopModel />
-      <ChairModel />
+      <Suspense fallback={<BaseLoadingHandler />}>
+        <BaseModel />
+      </Suspense>
+      <Suspense fallback={<TopLoadingHandler />}>
+        <TopModel />
+      </Suspense>
+      <Suspense fallback={<ChairLoadingHandler />}>
+        <ChairModel />
+      </Suspense>
 
       <ContactShadows
         position={[0, 0, 0]}

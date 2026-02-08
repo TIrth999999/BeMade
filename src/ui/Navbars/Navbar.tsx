@@ -1,6 +1,6 @@
-import "../App.css";
+import "../../App.css";
 import { useState } from "react";
-import { SampleModal } from "./SampleModal";
+import { SampleModal } from "../Modals/SampleModal";
 
 export function Navbar() {
     const [isSampleModalOpen, setIsSampleModalOpen] = useState(false);
