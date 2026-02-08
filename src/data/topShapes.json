@@ -1,0 +1,57 @@
+[
+    {
+        "id": "capsule",
+        "name": "Capsule",
+        "glbUrl": "./assets/top-shape/capsule/model.glb",
+        "mdfUrl": "./assets/top-shape/capsule/model-mdf.glb",
+        "previewUrl": "./assets/top-shape/capsule/preview.webp",
+        "defaultLength": 3180,
+        "defaultWidth": 1300
+    },
+        {
+        "id": "rectangle",
+        "name": "Rectangle",
+        "glbUrl": "./assets/top-shape/rectangle/model.glb",
+        "mdfUrl": "./assets/top-shape/rectangle/model-mdf.glb",
+        "previewUrl": "./assets/top-shape/rectangle/preview.webp",
+        "defaultLength": 3180,
+        "defaultWidth": 1300
+    },
+        {
+        "id": "oval",
+        "name": "Oval",
+        "glbUrl": "./assets/top-shape/oval/model.glb",
+        "mdfUrl": "./assets/top-shape/oval/model-mdf.glb",
+        "previewUrl": "./assets/top-shape/oval/preview.webp",
+        "defaultLength": 3180,
+        "defaultWidth": 1300
+    },
+        {
+        "id": "oblong",
+        "name": "Oblong",
+        "glbUrl": "./assets/top-shape/oblong/model.glb",
+        "mdfUrl": "./assets/top-shape/oblong/model-mdf.glb",
+        "previewUrl": "./assets/top-shape/oblong/preview.webp",
+        "defaultLength": 3180,
+        "defaultWidth": 1300
+    },
+        {
+        "id": "roundCircle",
+        "name": "Round Circle",
+        "glbUrl": "./assets/top-shape/round/model.glb",
+        "mdfUrl": "./assets/top-shape/round/model-mdf.glb",
+        "previewUrl": "./assets/top-shape/round/preview.webp",
+        "defaultLength": 1580,
+        "defaultWidth": 1580
+    },
+        {
+        "id": "square",
+        "name": "Square",
+        "glbUrl": "./assets/top-shape/square/model.glb",
+        "mdfUrl": "./assets/top-shape/square/model-mdf.glb",
+        "previewUrl": "./assets/top-shape/square/preview.webp",
+        "defaultLength": 1580,
+        "defaultWidth": 1580
+    }
+    
+]

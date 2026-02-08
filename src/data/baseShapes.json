@@ -1,0 +1,134 @@
+[
+    {
+        "id": "linea",
+        "name": "Linea",
+        "glbUrl": "./assets/base-shape/linea/model.glb",
+        "colorIds": [
+            "linea_gold",
+            "linea_bookBlack"
+        ],
+        "topShapeIds": [
+            "capsule",
+            "rectangle",
+            "oval",
+            "oblong"
+        ],
+        "previewUrl": "./assets/base-shape/linea/preview.webp",
+        "smallGlbUrl": ""
+    },
+    {
+        "id": "lineadome",
+        "name": "Linea Dome",
+        "glbUrl": "./assets/base-shape/linea-dome/model.glb",
+        "colorIds": [
+            "lineaDome_gold",
+            "lineaDome_CocoaIron"
+        ],
+        "topShapeIds": [
+            "roundCircle",
+            "square"
+        ],
+        "previewUrl": "./assets/base-shape/linea-dome/preview.webp",
+        "smallGlbUrl": ""
+    },
+    {
+        "id": "lineaContour",
+        "name": "Linea Contour",
+        "glbUrl": "./assets/base-shape/linea-contour/model.glb",
+        "colorIds": [
+            "lineaCo_gold",
+            "lineaCo_CocoaIron"
+        ],
+        "topShapeIds": [
+            "capsule",
+            "rectangle",
+            "oval",
+            "oblong"
+        ],
+        "previewUrl": "./assets/base-shape/linea-contour/preview.webp",
+        "smallGlbUrl": ""
+    },
+    {
+        "id": "curva",
+        "name": "Curva",
+        "glbUrl": "./assets/base-shape/curva/model.glb",
+        "colorIds": [
+            "curva_champagne"
+        ],
+        "topShapeIds": [
+            "capsule",
+            "rectangle",
+            "oval",
+            "oblong"
+        ],
+        "previewUrl": "./assets/base-shape/curva/preview.webp",
+        "smallGlbUrl": ""
+    },
+    {
+        "id": "cradle",
+        "name": "Cradle",
+        "glbUrl": "./assets/base-shape/cradle/model.glb",
+        "colorIds": [
+            "cradle_champagne",
+            "cradle_graphite"
+        ],
+        "topShapeIds": [
+            "capsule",
+            "rectangle",
+            "oval",
+            "oblong"
+        ],
+        "previewUrl": "./assets/base-shape/cradle/preview.webp",
+        "smallGlbUrl": "./assets/base-shape/cradle/smallModel.glb"
+    },
+    {
+        "id": "twiste",
+        "name": "Twiste",
+        "glbUrl": "./assets/base-shape/twiste/model.glb",
+        "colorIds": [
+            "twiste_brassTeak"
+        ],
+        "topShapeIds": [
+            "capsule",
+            "rectangle",
+            "oval",
+            "oblong"
+        ],
+        "previewUrl": "./assets/base-shape/twiste/preview.webp",
+        "smallGlbUrl": ""
+    },
+    {
+        "id": "axis",
+        "name": "Axis",
+        "glbUrl": "./assets/base-shape/axis/model.glb",
+        "colorIds": [
+            "axis_graphite",
+            "axis_cashmereMetal"
+        ],
+        "topShapeIds": [
+            "capsule",
+            "rectangle",
+            "oval",
+            "oblong"
+        ],
+        "previewUrl": "./assets/base-shape/axis/preview.webp",
+        "smallGlbUrl": ""
+    },
+    {
+        "id": "moon",
+        "name": "Moon",
+        "glbUrl": "./assets/base-shape/moon/model.glb",
+        "colorIds": [
+            "moon_clothGrey",
+            "moon_clothGold"
+        ],
+        "topShapeIds": [
+            "capsule",
+            "rectangle",
+            "oval",
+            "oblong"
+        ],
+        "previewUrl": "./assets/base-shape/moon/preview.webp",
+        "smallGlbUrl": ""
+    }
+]
