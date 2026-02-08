@@ -1,4 +1,3 @@
-import { exp } from "three/tsl";
 
 export type BaseShape = {
   id: string;
