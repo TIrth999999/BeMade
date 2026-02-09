@@ -1,6 +1,5 @@
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../context/StoreContext";
-import { Summary } from "./Summary";
 
 export const ChairSelector = observer(() => {
     const { chairStore, cameraPositionStore } = useStore();
