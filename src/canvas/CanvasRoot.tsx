@@ -2,7 +2,7 @@ import { Suspense, useEffect } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
 import { BaseModel } from "./BaseModel";
 import { TopModel } from "./TopModel";
-import { ContactShadows, Environment } from "@react-three/drei";
+import { ContactShadows } from "@react-three/drei";
 import * as THREE from 'three';
 import { CameraSetup } from "./Camera";
 import { ChairModel } from "./ChairModel";
@@ -131,12 +131,12 @@ export const CanvasRoot = observer(() => {
         environmentIntensity={0.2}
       /> */}
 
-            <directionalLight
+      <directionalLight
         position={[3, 0.2, 2]}
         intensity={1.9}
       />
 
-            <directionalLight
+      <directionalLight
         position={[-3, 0.2, 2]}
         intensity={1.9}
       />
