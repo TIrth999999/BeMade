@@ -105,9 +105,10 @@ export const DimensionControls = observer(() => {
     type: "length" | "width",
     value: number,
     min: number,
-    max: number
+    max: number,
+    step: number
   ) => {
-    const snapped = Math.round(value / 100) * 100;
+    const snapped = Math.round(value / step) * step;
     const clamped = Math.max(min, Math.min(max, snapped));
 
     if (type === "length") {
@@ -123,7 +124,8 @@ export const DimensionControls = observer(() => {
     value: number,
     type: "length" | "width",
     min: number,
-    max: number
+    max: number,
+    offset: number
   ) => (
     <div className="dimension-control">
       <span className="dimension-label">{label}</span>
@@ -131,7 +133,7 @@ export const DimensionControls = observer(() => {
       <div className="slider-container">
         <button
           className="slider-btn"
-          onClick={() => handleUpdate(type, value - 100, min, max)}
+          onClick={() => handleUpdate(type, value - offset, min, max, offset)}
         >
           −
         </button>
@@ -141,16 +143,16 @@ export const DimensionControls = observer(() => {
           className="custom-slider"
           min={min}
           max={max}
-          step={100}
+          step={offset}
           value={value}
           onChange={(e) =>
-            handleUpdate(type, Number(e.target.value), min, max)
+            handleUpdate(type, Number(e.target.value), min, max, offset)
           }
         />
 
         <button
           className="slider-btn"
-          onClick={() => handleUpdate(type, value + 100, min, max)}
+          onClick={() => handleUpdate(type, value + offset, min, max, offset)}
         >
           +
         </button>
@@ -176,7 +178,8 @@ export const DimensionControls = observer(() => {
         dimensionsStore.length,
         "length",
         lengthMin,
-        lengthMax
+        lengthMax,
+        100
       )}
 
       {!isUniform &&
@@ -185,7 +188,8 @@ export const DimensionControls = observer(() => {
           dimensionsStore.width,
           "width",
           widthMin,
-          widthMax
+          widthMax,
+          50
         )}
 
     </div>
