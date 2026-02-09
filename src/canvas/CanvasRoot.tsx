@@ -2,7 +2,7 @@ import { Suspense, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
 import { BaseModel } from "./BaseModel";
 import { TopModel } from "./TopModel";
-import { ContactShadows } from "@react-three/drei";
+import { ContactShadows, Environment } from "@react-three/drei";
 import * as THREE from 'three';
 import { CameraSetup } from "./Camera";
 import { ChairModel } from "./ChairModel";
@@ -35,45 +35,45 @@ const ChairLoadingHandler = observer(() => {
   return null;
 });
 export const CanvasRoot = observer(() => {
+
+  const { cameraPositionStore } = useStore();
+
   return (
-    <Canvas shadows dpr={[1, 2]} camera={{ fov: 75 }}
+    <Canvas shadows dpr={[1, 2]} camera={{ fov: cameraPositionStore.selectedCameraPosition.fov }}
       gl={{
         outputColorSpace: THREE.SRGBColorSpace,
         toneMapping: THREE.ACESFilmicToneMapping,
         toneMappingExposure: 1
       }}>
       <CameraSetup />
-      <ambientLight intensity={0.6} />
+      <hemisphereLight
+        args={["#ffffff", "#d6d2c8", 0.15]}
+      />
 
-      <directionalLight
-        position={[5, 5, -5]}
-        intensity={1.5}
+       <directionalLight
+        position={[6, 7, 2]}
+        intensity={1.6}
         castShadow
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
-        shadow-camera-near={1}
-        shadow-camera-far={20}
         shadow-camera-left={-8}
         shadow-camera-right={8}
         shadow-camera-top={8}
         shadow-camera-bottom={-8}
-        shadow-bias={-0.001}
+        shadow-bias={-0.0002}
+        shadow-normalBias={0.02}
       />
 
-      <spotLight
-        position={[-3, 6, 2]}
-        angle={0.45}
-        penumbra={0.8}
-        intensity={50}
-        castShadow
+       <directionalLight
+        position={[0, 1, 6]}
+        intensity={0.9}
       />
 
-      <pointLight
-        position={[1, 0, 2]}
-        intensity={20}
-        color="#ffffff"
-        distance={15}
-      />
+      <directionalLight
+        position={[0, 2, -6]}
+        intensity={0.35}
+        color={"#e7f0ff"}
+      /><ambientLight intensity={0.62} />
 
       <Suspense fallback={<BaseLoadingHandler />}>
         <BaseModel />
@@ -91,6 +91,12 @@ export const CanvasRoot = observer(() => {
         blur={0.5}
         far={1}
         opacity={0.5}
+      />
+
+      <Environment 
+        preset='studio'
+        blur={0.25}
+        environmentIntensity={0.2}
       />
 
     </Canvas>

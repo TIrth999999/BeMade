@@ -5,7 +5,6 @@ import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import baseShapes from "../data/baseShapes.json";
 
-// Preload all base shape models
 baseShapes.forEach(shape => {
   useGLTF.preload(shape.glbUrl);
   if (shape.smallGlbUrl) {
@@ -14,7 +13,7 @@ baseShapes.forEach(shape => {
 });
 
 export const BaseModel = observer(() => {
-  const { baseStore, dimensionsStore } = useStore();
+  const { baseStore, dimensionsStore, cameraPositionStore } = useStore();
   const prevBaseId = useRef<string | null>(null);
 
 
@@ -70,7 +69,7 @@ export const BaseModel = observer(() => {
       child.material.normalMap = textures.normalMap;
       child.material.roughnessMap = textures.roughnessMap;
       child.material.metalnessMap = textures.metalnessMap;
-      child.material.metalness = 0.8;
+      child.material.metalness = 0.65;
       child.material.roughness = 0.5;
 
       child.material.needsUpdate = true;
@@ -137,6 +136,9 @@ export const BaseModel = observer(() => {
 
   }, [dimensionsStore.length, gltf.scene, baseStore.selectedBaseId, baseStore.selectedBase]);
 
+  if (cameraPositionStore.selectedCameraPositionName === "twoChairView"){
+    return <></>
+  }
 
   return <>
     <primitive object={gltf.scene} />

@@ -6,6 +6,7 @@ import { DimensionsStore } from "./DimensionsStore";
 import { ChairStore } from "./ChairStore";
 import { UIStore } from "./UIStore";
 import { makeAutoObservable } from "mobx";
+import { CameraPositionStore } from "./CameraPositionStore";
 
 export class RootStore {
   baseStore: BaseStore;
@@ -15,6 +16,7 @@ export class RootStore {
   dimensionsStore: DimensionsStore;
   chairStore: ChairStore;
   uiStore: UIStore;
+  cameraPositionStore: CameraPositionStore;
 
   constructor() {
     this.baseStore = new BaseStore(this);
@@ -24,6 +26,7 @@ export class RootStore {
     this.topShapeStore = new TopShapeStore(this);
     this.chairStore = new ChairStore(this);
     this.uiStore = new UIStore(this);
+    this.cameraPositionStore = new CameraPositionStore(this);
     makeAutoObservable(this);
   }
 }

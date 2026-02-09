@@ -64,3 +64,9 @@ export type Chair = {
   colors: ChairColor[];
   previewUrl: string;
 }
+
+export type CameraPosition = {
+  name: string;
+  position: [number, number, number];
+  fov : number;
+}

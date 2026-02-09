@@ -5,8 +5,25 @@ import { Footer } from "./Footer/Footer";
 import { TopColorInfoCard } from "./Others/TopColorInfoCard";
 import { LoadingOverlay } from "./Others/LoadingOverlay";
 import { observer } from "mobx-react-lite";
+import { useStore } from "../context/StoreContext";
+import { CarouselDots } from "./Others/CarouselDots";
 
 export const DesignPage = observer(() => {
+    const { cameraPositionStore, chairStore } = useStore();
+
+    const chairCount = chairStore.count;
+    const allCameraPositions = cameraPositionStore.cameraPositions;
+    const cameraPositions = chairCount === 0 ? allCameraPositions.slice(0, 4) : allCameraPositions;
+    // console.log("Using camera positions:", cameraPositions.map(c => c.name));
+    const selectedIdx = cameraPositions.findIndex(
+        (c) => c.name === cameraPositionStore.selectedCameraPositionName
+    );
+
+    const handleSelect = (idx: number) => {
+        const pos = cameraPositions[idx];
+        console.log("Selected camera position:", pos);
+        if (pos) cameraPositionStore.setCameraPosition(pos.name);
+    };
 
     return (
         <>
@@ -21,10 +38,13 @@ export const DesignPage = observer(() => {
                         <div className="canvas-icon"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 16 16" height="18" width="18" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.828 10.172a.5.5 0 0 0-.707 0l-4.096 4.096V11.5a.5.5 0 0 0-1 0v3.975a.5.5 0 0 0 .5.5H4.5a.5.5 0 0 0 0-1H1.732l4.096-4.096a.5.5 0 0 0 0-.707m4.344 0a.5.5 0 0 1 .707 0l4.096 4.096V11.5a.5.5 0 1 1 1 0v3.975a.5.5 0 0 1-.5.5H11.5a.5.5 0 0 1 0-1h2.768l-4.096-4.096a.5.5 0 0 1 0-.707m0-4.344a.5.5 0 0 0 .707 0l4.096-4.096V4.5a.5.5 0 1 0 1 0V.525a.5.5 0 0 0-.5-.5H11.5a.5.5 0 0 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 0 .707m-4.344 0a.5.5 0 0 1-.707 0L1.025 1.732V4.5a.5.5 0 0 1-1 0V.525a.5.5 0 0 1 .5-.5H4.5a.5.5 0 0 1 0 1H1.732l4.096 4.096a.5.5 0 0 1 0 .707"></path></svg></div>
                     </div>
                     <TopColorInfoCard />
-
+                    <CarouselDots
+                        count={cameraPositions.length}
+                        current={selectedIdx === -1 ? 0 : selectedIdx}
+                        onSelect={handleSelect}
+                    />
                     <CanvasRoot />
                 </div>
-
                 <RightPanel />
             </div>
             <Footer />

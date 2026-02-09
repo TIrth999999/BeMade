@@ -12,7 +12,7 @@ chairData.forEach(chair => {
 });
 
 export const ChairModel = observer(() => {
-    const { chairStore } = useStore();
+    const { chairStore, cameraPositionStore } = useStore();
     const positions = useChairPositions();
 
     const shape = chairStore.selectedChair;
@@ -92,6 +92,21 @@ export const ChairModel = observer(() => {
         });
     }, [chairs, materials]);
 
+    if (cameraPositionStore.selectedCameraPositionName === "frontView" || cameraPositionStore.selectedCameraPositionName === "leftView" ||
+        cameraPositionStore.selectedCameraPositionName === "topView" || cameraPositionStore.selectedCameraPositionName === "rightView"
+    ) {
+        return <></>
+    }
+
+    if (cameraPositionStore.selectedCameraPositionName === "twoChairView") {
+        return (
+            <group>
+                <primitive object={chairs[0]} position={[-0.3, 0, 0]} rotation={[0,Math.PI,0]}/>
+                <primitive object={chairs[1]} position={[0.3, 0, 0]} />
+             </group>
+        );
+    }
+
     return (
         <group>
             {chairs.map((scene, i) => {
@@ -107,4 +122,5 @@ export const ChairModel = observer(() => {
             })}
         </group>
     );
+
 });

@@ -5,14 +5,13 @@ import * as THREE from "three";
 import { useEffect } from "react";
 import topShapes from "../data/topShapes.json";
 
-// Preload all top shape models
 topShapes.forEach(shape => {
   useGLTF.preload(shape.glbUrl);
   useGLTF.preload(shape.mdfUrl);
 });
 
 export const TopModel = observer(() => {
-  const { topShapeStore, topColorStore, dimensionsStore } = useStore();
+  const { topShapeStore, topColorStore, dimensionsStore,cameraPositionStore } = useStore();
 
   const shape = topShapeStore.selectedTopShape;
   const color = topColorStore.selectedColor;
@@ -65,7 +64,9 @@ export const TopModel = observer(() => {
     1,
     dimensionsStore.width / shape.defaultWidth
   ];
-
+  if (cameraPositionStore.selectedCameraPositionName === "twoChairView") {
+    return <></>
+  }
   return <>
     <primitive object={gltf.scene} scale={scale} />
     <primitive object={gltf2.scene} scale={scale} />

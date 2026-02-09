@@ -1341,7 +1341,7 @@ body {
     position: absolute;
     bottom: 24px;
     left: 24px;
-    min-width: 430px;
+    max-width: 430px;
 
     border-radius: 16px;
     padding: 20px;
