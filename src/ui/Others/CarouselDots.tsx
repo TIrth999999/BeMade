@@ -7,6 +7,30 @@ interface CarouselDotsProps {
   onSelect: (idx: number) => void;
 }
 
+const data = [
+  {
+    name: "Front View",
+  },
+  {
+    name: "Left View",
+  },
+  {
+    name: "Top View",
+  },
+  {
+    name: "Right View",
+  },
+  {
+    name: "Two Chair View",
+  },
+  {
+    name: "Chair View",
+  },
+  {
+    name: "Chair Top View",
+  },
+]
+
 export const CarouselDots: React.FC<CarouselDotsProps> = ({
   count,
   current,
@@ -48,7 +72,9 @@ export const CarouselDots: React.FC<CarouselDotsProps> = ({
             className={`carousel-dot${idx === current ? " active" : ""}`}
             onClick={() => onSelect(idx)}
             aria-label={`Go to item ${idx + 1}`}
-          />
+          >
+            <span className="carousel-tooltip">{data[idx].name}</span>
+          </button>
         ))}
       </div>
 

@@ -21,6 +21,7 @@
   opacity: 0.7;
   transition: opacity 0.2s;
 }
+
 .carousel-arrow:disabled {
   opacity: 0.3;
   cursor: default;
@@ -32,6 +33,7 @@
 }
 
 .carousel-dot {
+  position: relative;
   width: 12px;
   height: 12px;
   border-radius: 50%;
@@ -39,8 +41,47 @@
   background: #ffffff;
   cursor: pointer;
   transition: background 0.2s, transform 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
 .carousel-dot.active {
   background: #555;
-  transform: scale(1.2);
+}
+
+.carousel-tooltip {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%) translateY(5px);
+  background: #1a1a1a;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.carousel-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid #1a1a1a;
+}
+
+.carousel-dot:hover .carousel-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
 }

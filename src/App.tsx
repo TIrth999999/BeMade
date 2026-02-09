@@ -7,6 +7,7 @@ import { observer } from "mobx-react-lite";
 import { useAssetPreloader } from "./utils/useAssetPreloader";
 import { getAssetsToPreload } from "./utils/assetsToPreload";
 import { LoadingScreen } from "./ui/Components/LoadingScreen";
+import { Toaster } from "react-hot-toast";
 
 const assets = getAssetsToPreload();
 
@@ -19,6 +20,7 @@ export default observer(function App() {
 
   return (
     <StoreProvider>
+      <Toaster />
       <Router>
         <Routes>
           <Route path="/" element={<DesignPage />} />

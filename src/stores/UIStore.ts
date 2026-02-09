@@ -11,6 +11,9 @@ export class UIStore {
     canvasScreenshot: string | null = null;
     screenshotReady = false;
 
+    isFullscreen: boolean = false;
+    isShareModalOpen: boolean = false;
+
     constructor(rootStore: RootStore) {
         this.rootStore = rootStore;
         makeAutoObservable(this);
@@ -43,10 +46,18 @@ export class UIStore {
     }
 
     resetScreenshot() {
-  this.takeScreenshot = false;
-  this.screenshotReady = false;
-  this.canvasScreenshot = null;
-}
+        this.takeScreenshot = false;
+        this.screenshotReady = false;
+        this.canvasScreenshot = null;
+    }
+
+    toggleFullscreen() {
+        this.isFullscreen = !this.isFullscreen;
+    }
+
+    setShareModalOpen(val: boolean) {
+        this.isShareModalOpen = val;
+    }
 
 
     get isCanvasLoading() {
