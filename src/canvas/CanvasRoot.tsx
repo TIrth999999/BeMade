@@ -1,5 +1,5 @@
 import { Suspense, useEffect } from "react";
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useThree } from "@react-three/fiber";
 import { BaseModel } from "./BaseModel";
 import { TopModel } from "./TopModel";
 import { ContactShadows, Environment } from "@react-three/drei";
@@ -8,6 +8,25 @@ import { CameraSetup } from "./Camera";
 import { ChairModel } from "./ChairModel";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../context/StoreContext";
+
+export const ScreenshotHandler = observer(() => {
+  const { gl, scene, camera } = useThree();
+  const { uiStore } = useStore();
+
+  useEffect(() => {
+    if (!uiStore.takeScreenshot) return;
+
+    gl.render(scene, camera);
+
+    const dataURL = gl.domElement.toDataURL("image/png");
+
+    uiStore.setScreenshot(dataURL);
+    uiStore.resetScreenshotTrigger();
+  }, [uiStore.takeScreenshot]);
+
+  return null;
+});
+
 
 const BaseLoadingHandler = observer(() => {
   const { uiStore } = useStore();
@@ -41,6 +60,7 @@ export const CanvasRoot = observer(() => {
   return (
     <Canvas shadows dpr={[1, 2]} camera={{ fov: cameraPositionStore.selectedCameraPosition.fov }}
       gl={{
+        preserveDrawingBuffer: true,
         outputColorSpace: THREE.SRGBColorSpace,
         toneMapping: THREE.ACESFilmicToneMapping,
         toneMappingExposure: 1
@@ -48,7 +68,7 @@ export const CanvasRoot = observer(() => {
       <CameraSetup />
 
       <directionalLight
-        position={[6, 7, 2]}
+        position={[6, 4, 2]}
         intensity={1.6}
         castShadow
         shadow-mapSize-width={2048}
@@ -66,12 +86,17 @@ export const CanvasRoot = observer(() => {
         intensity={0.9}
       />
 
+      <pointLight
+        position={[0, 6, 0]}
+        intensity={8.5}
+      />
+
       <directionalLight
         position={[0, 2, -6]}
         intensity={0.35}
         color={"#e7f0ff"}
       />
-      <ambientLight intensity={1.5} />
+      <ambientLight intensity={0.1} />
 
       {cameraPositionStore.selectedCameraPositionName !== "twoChairView" && (
         <Suspense fallback={<BaseLoadingHandler />}>
@@ -100,21 +125,23 @@ export const CanvasRoot = observer(() => {
         opacity={0.5}
       />
 
-      <Environment
+      {/* <Environment
         preset='studio'
         blur={0.25}
         environmentIntensity={0.2}
+      /> */}
+
+            <directionalLight
+        position={[3, 0.2, 2]}
+        intensity={1.9}
       />
 
             <directionalLight
-        position={[0, 1, 6]}
-        intensity={0.9}
+        position={[-3, 0.2, 2]}
+        intensity={1.9}
       />
 
-            <directionalLight
-        position={[0, 1, 6]}
-        intensity={0.9}
-      />
+      <ScreenshotHandler />
 
     </Canvas>
   );

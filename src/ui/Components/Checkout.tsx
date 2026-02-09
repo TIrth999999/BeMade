@@ -5,6 +5,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { CheckoutNavbar } from "../Navbars/CheckoutNavbar";
 import { useState } from "react";
 import { TermsModal } from "../Modals/TermsModal";
+import { useStore } from "../../context/StoreContext";
 
 interface LocationState {
     isSampleOrder?: boolean;
@@ -27,6 +28,8 @@ export const Checkout = observer(() => {
     const isSampleOrder = state?.isSampleOrder || false;
     const samples = state?.samples || [];
     const sampleTotalPrice = state?.totalPrice || 0;
+
+    const { uiStore } = useStore();
 
     const handleAcceptTerms = () => {
         setTermsAccepted(true);
@@ -90,7 +93,10 @@ export const Checkout = observer(() => {
                                 <button
                                     type="button"
                                     className="back-btn"
-                                    onClick={() => navigate('/')}
+                                    onClick={() => {
+                                        uiStore.resetScreenshot();
+                                        navigate('/');
+                                    }}
                                 >
                                     <span className="arrow-left">‹</span> Back to Design
                                 </button>
@@ -127,11 +133,36 @@ export const Checkout = observer(() => {
                     <div className="checkout-right">
                         {!isSampleOrder && (
                             <div className="checkout-preview-image">
-                                {/* Placeholder for table image */}
-                                <div style={{ width: '100%', height: '240px', background: 'linear-gradient(135deg, #e0e0e0 0%, #f5f5f5 100%)', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999', marginBottom: '0' }}>
-                                    <img src="/assets/preview-placeholder.png" alt="Table Preview" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', opacity: 0.5 }} onError={(e) => e.currentTarget.style.display = 'none'} />
-                                </div>
+                                {uiStore.canvasScreenshot ? (
+                                    <img
+                                        src={uiStore.canvasScreenshot}
+                                        alt="Table Preview"
+                                        style={{
+                                            width: "100%",
+                                            height: "240px",
+                                            objectFit: "contain",
+                                            borderRadius: "4px",
+                                            background: 'url("./assets/background/background.svg") center center / cover no-repeat'
+                                        }}
+                                    />
+                                ) : (
+                                    <div
+                                        style={{
+                                            width: "100%",
+                                            height: "240px",
+                                            background: "linear-gradient(135deg, #e0e0e0 0%, #f5f5f5 100%)",
+                                            borderRadius: "4px",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                            color: "#999"
+                                        }}
+                                    >
+                                        No preview available
+                                    </div>
+                                )}
                             </div>
+
                         )}
 
                         <div className="checkout-summary-wrapper">

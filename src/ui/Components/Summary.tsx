@@ -1,13 +1,19 @@
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../context/StoreContext";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 
 export const Summary = observer(() => {
-    const { topShapeStore, baseStore, chairStore, dimensionsStore, topColorStore } = useStore();
+    const { topShapeStore, baseStore, chairStore, dimensionsStore, topColorStore, uiStore, cameraPositionStore } = useStore();
     const navigate = useNavigate();
     const location = useLocation();
 
     const isCheckoutPage = location.pathname === '/checkout';
+    useEffect(() => {
+        if (uiStore.screenshotReady) {
+            navigate("/checkout");
+        }
+    }, [uiStore.screenshotReady]);
 
     let tablePrice = 0;
 
@@ -16,47 +22,47 @@ export const Summary = observer(() => {
         if (dimensionsStore.length >= 1600 && dimensionsStore.length <= 2200) {
             tablePrice = 2880;
         }
-        else if(dimensionsStore.length >= 2250 && dimensionsStore.length <= 2450) {
+        else if (dimensionsStore.length >= 2250 && dimensionsStore.length <= 2450) {
             tablePrice = 3312;
         }
-        else if(dimensionsStore.length >= 2500 && dimensionsStore.length <= 2850) {
+        else if (dimensionsStore.length >= 2500 && dimensionsStore.length <= 2850) {
             tablePrice = 3576;
         }
-        else if(dimensionsStore.length >= 2900 && dimensionsStore.length <= 3200) {
+        else if (dimensionsStore.length >= 2900 && dimensionsStore.length <= 3200) {
             tablePrice = 3840;
         }
     }
-    else if(topShapeStore.selectedTopShapeId === "roundCircle") {
+    else if (topShapeStore.selectedTopShapeId === "roundCircle") {
         if (dimensionsStore.length == 1200) {
             tablePrice = 2290;
         }
-        else if(dimensionsStore.length == 1300) {
+        else if (dimensionsStore.length == 1300) {
             tablePrice = 2480;
         }
-        else if(dimensionsStore.length == 1400) {
+        else if (dimensionsStore.length == 1400) {
             tablePrice = 2750;
         }
-        else if(dimensionsStore.length == 1500) {
+        else if (dimensionsStore.length == 1500) {
             tablePrice = 2980;
         }
-        else if(dimensionsStore.length >= 1580) {
+        else if (dimensionsStore.length >= 1580) {
             tablePrice = 2980;
         }
     }
-    else if(topShapeStore.selectedTopShapeId === "square") {
+    else if (topShapeStore.selectedTopShapeId === "square") {
         if (dimensionsStore.length == 1200) {
             tablePrice = 2190;
         }
-        else if(dimensionsStore.length == 1300) {
+        else if (dimensionsStore.length == 1300) {
             tablePrice = 2380;
         }
-        else if(dimensionsStore.length == 1400) {
+        else if (dimensionsStore.length == 1400) {
             tablePrice = 2650;
         }
-        else if(dimensionsStore.length == 1500) {
+        else if (dimensionsStore.length == 1500) {
             tablePrice = 2880;
         }
-        else if(dimensionsStore.length >= 1580) {
+        else if (dimensionsStore.length >= 1580) {
             tablePrice = 2880;
         }
     }
@@ -157,7 +163,11 @@ export const Summary = observer(() => {
 
                     <button
                         className="place-order-btn"
-                        onClick={() => navigate('/checkout')}
+                        onClick={() => {
+                            
+                        uiStore.requestScreenshot()
+
+                        }}
                     >
                         PLACE ORDER
                     </button>

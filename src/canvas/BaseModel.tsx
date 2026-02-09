@@ -68,7 +68,7 @@ export const BaseModel = observer(() => {
       child.material.roughnessMap = textures.roughnessMap;
       child.material.metalnessMap = textures.metalnessMap;
       child.material.metalness = 0.65;
-      child.material.roughness = 0.5;
+      child.material.roughness = 0.7;
 
       child.material.needsUpdate = true;
       child.castShadow = true;
