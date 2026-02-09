@@ -188,7 +188,6 @@ export const DimensionControls = observer(() => {
           widthMax
         )}
 
-      <h3 className="panel-title" style={{ marginTop: '20px' }}>Wear It With</h3>
     </div>
   );
 });

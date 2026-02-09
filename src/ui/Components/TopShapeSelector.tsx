@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite";
 import { useStore } from "../../context/StoreContext";
 
 export const TopShapeSelector = observer(() => {
-  const { baseStore, topShapeStore } = useStore();
+  const { baseStore, topShapeStore,cameraPositionStore } = useStore();
 
   return (
     <div className="panel-section">
@@ -15,7 +15,7 @@ export const TopShapeSelector = observer(() => {
 
               className={`card ${topShapeStore.selectedTopShape.id === s.id ? "active" : ""
                 }`}
-              onClick={() => topShapeStore.setTopShape(s.id)}
+              onClick={() => {topShapeStore.setTopShape(s.id); cameraPositionStore.setCameraPosition("topView") }}
             >
               <img src={s.previewUrl} alt={s.name} />
 

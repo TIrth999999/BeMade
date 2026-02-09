@@ -46,11 +46,8 @@ export const CanvasRoot = observer(() => {
         toneMappingExposure: 1
       }}>
       <CameraSetup />
-      <hemisphereLight
-        args={["#ffffff", "#d6d2c8", 0.15]}
-      />
 
-       <directionalLight
+      <directionalLight
         position={[6, 7, 2]}
         intensity={1.6}
         castShadow
@@ -64,7 +61,7 @@ export const CanvasRoot = observer(() => {
         shadow-normalBias={0.02}
       />
 
-       <directionalLight
+      <directionalLight
         position={[0, 1, 6]}
         intensity={0.9}
       />
@@ -73,16 +70,26 @@ export const CanvasRoot = observer(() => {
         position={[0, 2, -6]}
         intensity={0.35}
         color={"#e7f0ff"}
-      /><ambientLight intensity={0.62} />
+      />
+      <ambientLight intensity={1.5} />
 
-      <Suspense fallback={<BaseLoadingHandler />}>
-        <BaseModel />
-      </Suspense>
-      <Suspense fallback={<TopLoadingHandler />}>
-        <TopModel />
-      </Suspense>
+      {cameraPositionStore.selectedCameraPositionName !== "twoChairView" && (
+        <Suspense fallback={<BaseLoadingHandler />}>
+          <BaseModel />
+        </Suspense>
+      )}
+
+
+      {cameraPositionStore.selectedCameraPositionName !== "twoChairView" && (
+        <Suspense fallback={<TopLoadingHandler />}>
+          <TopModel />
+        </Suspense>
+      )}
+
       <Suspense fallback={<ChairLoadingHandler />}>
-        <ChairModel />
+        <ChairModel
+          view={cameraPositionStore.selectedCameraPositionName}
+        />
       </Suspense>
 
       <ContactShadows
@@ -93,10 +100,20 @@ export const CanvasRoot = observer(() => {
         opacity={0.5}
       />
 
-      <Environment 
+      <Environment
         preset='studio'
         blur={0.25}
         environmentIntensity={0.2}
+      />
+
+            <directionalLight
+        position={[0, 1, 6]}
+        intensity={0.9}
+      />
+
+            <directionalLight
+        position={[0, 1, 6]}
+        intensity={0.9}
       />
 
     </Canvas>

@@ -6,13 +6,13 @@ import * as THREE from "three";
 import { useChairPositions } from "../utils/useChairPositions";
 import chairData from "../data/chairData.json";
 
-// Preload all chair models
 chairData.forEach(chair => {
-    useGLTF.preload(chair.glbUrl);
+  useGLTF.preload(chair.glbUrl);
 });
 
-export const ChairModel = observer(() => {
-    const { chairStore, cameraPositionStore } = useStore();
+export const ChairModel = observer(
+  ({ view }: { view: string }) => {
+    const { chairStore } = useStore();
     const positions = useChairPositions();
 
     const shape = chairStore.selectedChair;
@@ -21,106 +21,117 @@ export const ChairModel = observer(() => {
     const gltf = useGLTF(shape.glbUrl);
 
     const texturesLeg = useTexture({
-        map: color.chairLegColor,
-        normalMap: color.chairLegNormal,
-        metalnessMap: color.chairLegMetalness,
-        roughnessMap: color.chairLegRoughness
+      map: color.chairLegColor,
+      normalMap: color.chairLegNormal,
+      metalnessMap: color.chairLegMetalness,
+      roughnessMap: color.chairLegRoughness
     });
 
     const texturesTop = useTexture({
-        map: color.chairTopColor,
-        normalMap: color.chairTopNormal,
-        metalnessMap: color.chairTopMetalness,
-        roughnessMap: color.chairTopRoughness
+      map: color.chairTopColor,
+      normalMap: color.chairTopNormal,
+      metalnessMap: color.chairTopMetalness,
+      roughnessMap: color.chairTopRoughness
     });
 
     useMemo(() => {
-        const setupTexture = (t: any) => {
-            t.colorSpace = THREE.SRGBColorSpace;
-            t.anisotropy = 16;
-            t.flipY = false;
-        };
-        const setupLinearTexture = (t: any) => {
-            t.colorSpace = THREE.LinearSRGBColorSpace;
-            t.flipY = false;
-        };
+      const setupSRGB = (t: any) => {
+        t.colorSpace = THREE.SRGBColorSpace;
+        t.anisotropy = 16;
+        t.flipY = false;
+      };
+      const setupLinear = (t: any) => {
+        t.colorSpace = THREE.LinearSRGBColorSpace;
+        t.flipY = false;
+      };
 
-        setupTexture(texturesLeg.map);
-        setupLinearTexture(texturesLeg.normalMap);
-        setupLinearTexture(texturesLeg.roughnessMap);
-        setupLinearTexture(texturesLeg.metalnessMap);
+      setupSRGB(texturesLeg.map);
+      setupLinear(texturesLeg.normalMap);
+      setupLinear(texturesLeg.roughnessMap);
+      setupLinear(texturesLeg.metalnessMap);
 
-        setupTexture(texturesTop.map);
-        setupLinearTexture(texturesTop.normalMap);
-        setupLinearTexture(texturesTop.roughnessMap);
-        setupLinearTexture(texturesTop.metalnessMap);
+      setupSRGB(texturesTop.map);
+      setupLinear(texturesTop.normalMap);
+      setupLinear(texturesTop.roughnessMap);
+      setupLinear(texturesTop.metalnessMap);
     }, [texturesLeg, texturesTop]);
 
     const materials = useMemo(() => {
-        const legMat = new THREE.MeshStandardMaterial({
-            map: texturesLeg.map,
-            normalMap: texturesLeg.normalMap,
-            roughnessMap: texturesLeg.roughnessMap,
-            metalnessMap: texturesLeg.metalnessMap,
-        });
-
-        const topMat = new THREE.MeshStandardMaterial({
-            map: texturesTop.map,
-            normalMap: texturesTop.normalMap,
-            roughnessMap: texturesTop.roughnessMap,
-            metalnessMap: texturesTop.metalnessMap,
-        });
-
-        return { leg: legMat, top: topMat };
+      return {
+        leg: new THREE.MeshStandardMaterial({
+          map: texturesLeg.map,
+          normalMap: texturesLeg.normalMap,
+          roughnessMap: texturesLeg.roughnessMap,
+          metalnessMap: texturesLeg.metalnessMap,
+        }),
+        top: new THREE.MeshStandardMaterial({
+          map: texturesTop.map,
+          normalMap: texturesTop.normalMap,
+          roughnessMap: texturesTop.roughnessMap,
+          metalnessMap: texturesTop.metalnessMap,
+        })
+      };
     }, [texturesLeg, texturesTop]);
 
     const chairs = useMemo(() => {
-        return Array.from({ length: chairStore.count }).map(() => gltf.scene.clone(true));
+      return Array.from({ length: chairStore.count }).map(() =>
+        gltf.scene.clone(true)
+      );
     }, [gltf.scene, chairStore.count]);
 
     useLayoutEffect(() => {
-        chairs.forEach((chairScene) => {
-            chairScene.traverse((child: any) => {
-                if (!child.isMesh) return;
+      chairs.forEach(scene => {
+        scene.traverse((child: any) => {
+          if (!child.isMesh) return;
 
-                if (child.name.includes("Leg")) {
-                    child.material = materials.leg;
-                } else if (child.name.includes("Top")) {
-                    child.material = materials.top;
-                }
-            });
+          if (child.name.includes("Leg")) child.material = materials.leg;
+          if (child.name.includes("Top")) child.material = materials.top;
         });
+      });
     }, [chairs, materials]);
 
-    if (cameraPositionStore.selectedCameraPositionName === "frontView" || cameraPositionStore.selectedCameraPositionName === "leftView" ||
-        cameraPositionStore.selectedCameraPositionName === "topView" || cameraPositionStore.selectedCameraPositionName === "rightView"
+    if (
+      view === "frontView" ||
+      view === "leftView" ||
+      view === "topView" ||
+      view === "rightView"
     ) {
-        return <></>
+      return null;
     }
 
-    if (cameraPositionStore.selectedCameraPositionName === "twoChairView") {
-        return (
-            <group>
-                <primitive object={chairs[0]} position={[-0.3, 0, 0]} rotation={[0,Math.PI,0]}/>
-                <primitive object={chairs[1]} position={[0.3, 0, 0]} />
-             </group>
-        );
+    if (view === "twoChairView") {
+      return (
+        <group>
+          <primitive
+            object={chairs[0]}
+            position={[-0.3, 0, 0]}
+            rotation={[0, Math.PI, 0]}
+          />
+          <primitive
+            object={chairs[1]}
+            position={[0.3, 0, 0]}
+            rotation={[0, Math.PI*2, 0]}
+          />
+        </group>
+      );
     }
 
     return (
-        <group>
-            {chairs.map((scene, i) => {
-                const transform = positions[i] || { position: [0, 0, 0], rotation: [0, 0, 0] };
-                return (
-                    <primitive
-                        key={`chair-${shape.id}-${i}`}
-                        object={scene}
-                        position={transform.position}
-                        rotation={transform.rotation}
-                    />
-                );
-            })}
-        </group>
-    );
+      <group>
+        {chairs.map((scene, i) => {
+          const transform =
+            positions[i] || { position: [0, 0, 0], rotation: [0, 0, 0] };
 
-});
+          return (
+            <primitive
+              key={`chair-${shape.id}-${i}`}
+              object={scene}
+              position={transform.position}
+              rotation={transform.rotation}
+            />
+          );
+        })}
+      </group>
+    );
+  }
+);

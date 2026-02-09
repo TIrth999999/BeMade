@@ -3,14 +3,16 @@ import { useStore } from "../../context/StoreContext";
 import { Summary } from "./Summary";
 
 export const ChairSelector = observer(() => {
-    const { chairStore } = useStore();
+    const { chairStore, cameraPositionStore } = useStore();
 
     const maxLimit = chairStore.maxChairs;
     const isMaxReached = chairStore.count >= maxLimit;
 
     return (
+
         <div className="panel-section">
 
+            <h3 className="panel-title">Wear It With</h3>
             <div className="card-grid">
                 {chairStore.chairs.map(c => (
                     <div key={c.id}>
@@ -68,7 +70,12 @@ export const ChairSelector = observer(() => {
                         width: 'fit-content'
                     }}>
                         <button
-                            onClick={() => chairStore.count > 0 && chairStore.setCount(chairStore.count - 2)}
+                            onClick={() => {
+                                chairStore.count > 0 && chairStore.setCount(chairStore.count - 2);
+                                if (chairStore.count - 2 <= 0) {
+                                    cameraPositionStore.setCameraPosition("frontView")
+                                }
+                            }}
                             disabled={chairStore.count <= 0}
                             style={{
                                 width: '48px',
@@ -100,7 +107,10 @@ export const ChairSelector = observer(() => {
                             {chairStore.count}
                         </div>
                         <button
-                            onClick={() => !isMaxReached && chairStore.setCount(chairStore.count + 2)}
+                            onClick={() => {
+                                !isMaxReached && chairStore.setCount(chairStore.count + 2);
+                                cameraPositionStore.setCameraPosition("chairView")
+                            }}
                             disabled={isMaxReached}
                             style={{
                                 width: '48px',
@@ -121,7 +131,7 @@ export const ChairSelector = observer(() => {
                 </div>
             </div>
 
-            <Summary />
+
         </div>
     );
 });

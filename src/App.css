@@ -1064,20 +1064,24 @@ body {
     display: flex;
     flex-direction: column;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    border-radius: 20px;
 }
 
 .sample-header {
-    padding: 32px 32px 24px;
+    padding: 10px 32px 10px;
     border-bottom: 1px solid #e0e0e0;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    background-color: #000;
+    color: white;
+    border-radius: 20px 20px 0 0;
 }
 
 .sample-header h3 {
     font-size: 24px;
     font-weight: 600;
-    color: #000;
+    color: #fffefe;
     margin: 0;
 }
 
@@ -1142,6 +1146,38 @@ body {
     transition: transform 0.2s ease;
 }
 
+.sample-hover-box {
+  position: absolute;
+  top: 13%;
+  left: 88%;
+  transform: translateX(-50%);
+  width: 360px;
+
+  background: #ffffff;
+  color: #000000;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  text-align: center;
+
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  z-index: 100;
+
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.sample-hover-box img{
+    width: 340px;
+}
+
+.sample-item:hover .sample-hover-box {
+  opacity: 1;
+  visibility: visible;
+  /* transform: translateX(-50%) translateY(-4px); */
+}
+
 .sample-image-wrapper {
     position: relative;
     width: 100%;
@@ -1153,7 +1189,6 @@ body {
 }
 
 .sample-item.selected .sample-image-wrapper {
-    border-color: #000;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
@@ -1167,8 +1202,8 @@ body {
     position: absolute;
     top: 10px;
     right: 10px;
-    width: 32px;
-    height: 32px;
+    width: 42px;
+    height: 42px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1189,7 +1224,7 @@ body {
 }
 
 .sample-footer {
-    padding: 24px 32px;
+    padding: 12px 32px;
     border-top: 1px solid #e0e0e0;
     display: flex;
     justify-content: space-between;
@@ -1219,7 +1254,7 @@ body {
     color: white;
     border: none;
     padding: 14px 32px;
-    border-radius: 8px;
+    border-radius: 24px;
     font-size: 15px;
     font-weight: 600;
     cursor: pointer;

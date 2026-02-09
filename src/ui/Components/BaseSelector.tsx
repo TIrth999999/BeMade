@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite";
 import { useStore } from "../../context/StoreContext";
 
 export const BaseSelector = observer(() => {
-  const { baseStore } = useStore();
+  const { baseStore,cameraPositionStore } = useStore();
 
   return (
     <div className="panel-section">
@@ -15,7 +15,9 @@ export const BaseSelector = observer(() => {
 
               className={`card ${baseStore.selectedBase.id === b.id ? "active" : ""
                 }`}
-              onClick={() => baseStore.setBase(b.id)}
+              onClick={() => {baseStore.setBase(b.id);
+                cameraPositionStore.setCameraPosition("frontView")
+              }}
             >
               <img src={b.previewUrl} alt={b.name} />
 

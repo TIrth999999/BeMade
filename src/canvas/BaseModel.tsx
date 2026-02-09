@@ -13,7 +13,7 @@ baseShapes.forEach(shape => {
 });
 
 export const BaseModel = observer(() => {
-  const { baseStore, dimensionsStore, cameraPositionStore } = useStore();
+  const { baseStore, dimensionsStore } = useStore();
   const prevBaseId = useRef<string | null>(null);
 
 
@@ -34,8 +34,6 @@ export const BaseModel = observer(() => {
 
   const gltf = useGLTF(glbUrl);
   const color = baseStore.selectedBaseColor;
-
-  console.log(gltf.scene);
 
   const textures = useTexture({
     map: color.baseUrl,
@@ -135,10 +133,6 @@ export const BaseModel = observer(() => {
     rightMesh.position.x = originalPositions.current.right - maxShift * shiftFactor;
 
   }, [dimensionsStore.length, gltf.scene, baseStore.selectedBaseId, baseStore.selectedBase]);
-
-  if (cameraPositionStore.selectedCameraPositionName === "twoChairView"){
-    return <></>
-  }
 
   return <>
     <primitive object={gltf.scene} />

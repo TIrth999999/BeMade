@@ -7,6 +7,7 @@ import { LoadingOverlay } from "./Others/LoadingOverlay";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../context/StoreContext";
 import { CarouselDots } from "./Others/CarouselDots";
+import { useState } from "react";
 
 export const DesignPage = observer(() => {
     const { cameraPositionStore, chairStore } = useStore();
@@ -25,9 +26,12 @@ export const DesignPage = observer(() => {
         if (pos) cameraPositionStore.setCameraPosition(pos.name);
     };
 
+    const [activeStep, setActiveStep] = useState("baseSelector");
+
     return (
         <>
-            <Navbar />
+
+            <Navbar activeStep={activeStep} setActiveStep={setActiveStep} />
             <div className="app">
                 <div className="canvas-wrapper">
                     <img className="canvas-bg" src="./assets/background/background.svg" alt="Canvas Background" />
@@ -45,7 +49,7 @@ export const DesignPage = observer(() => {
                     />
                     <CanvasRoot />
                 </div>
-                <RightPanel />
+                <RightPanel setActiveStep={setActiveStep} />
             </div>
             <Footer />
         </>

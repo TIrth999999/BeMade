@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite";
 import { useStore } from "../../context/StoreContext";
 
 export const TopColorSelector = observer(() => {
-  const { topColorStore } = useStore();
+  const { topColorStore,cameraPositionStore } = useStore();
 
   const groups = topColorStore.colors.reduce((acc: any, color) => {
     const className = color.className || "Other";
@@ -24,7 +24,7 @@ export const TopColorSelector = observer(() => {
                 <div
                   className={`color-swatch ${topColorStore.selectedColorId === c.id ? "active" : ""
                     }`}
-                  onClick={() => topColorStore.setColor(c.id)} >
+                  onClick={() => {topColorStore.setColor(c.id); cameraPositionStore.setCameraPosition("topView") }} >
                   <img src={c.previewUrl} alt={c.name} /> </div>
                 <span className="color-name">{c.name}</span>
               </div>

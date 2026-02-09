@@ -38,6 +38,12 @@ const SampleItem = React.memo(({
                 )}
             </div>
             <span className="sample-name">{color.name}</span>
+
+            <div className="sample-hover-box">
+                <img src={color.sample_previewUrl}/>
+                <strong>{color.name}</strong>
+                <p>{color.description}</p>
+            </div>
         </div>
     );
 });
@@ -134,16 +140,13 @@ export const SampleModal = ({ isOpen, onClose }: SampleModalProps) => {
 
                 <div className="sample-footer">
                     <div className="sample-total">
-                        <span className="sample-count">
-                            {selectedSamples.size} sample{selectedSamples.size !== 1 ? 's' : ''} selected
-                        </span>
                     </div>
                     <button
                         className="sample-buy-btn"
                         disabled={selectedSamples.size === 0}
                         onClick={handleBuyNow}
                     >
-                        Buy Now →
+                        Buy Now  <i className="fas fa-arrow-right"></i>
                     </button>
                 </div>
             </div>
