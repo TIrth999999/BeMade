@@ -1,13 +1,15 @@
 import { StoreProvider } from "./context/StoreContext";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { DesignPage } from "./ui/DesignPage";
-import { Checkout } from "./ui/Components/Checkout";
 import "./App.css";
 import { observer } from "mobx-react-lite";
 import { useAssetPreloader } from "./utils/useAssetPreloader";
 import { getAssetsToPreload } from "./utils/assetsToPreload";
 import { LoadingScreen } from "./ui/Components/LoadingScreen";
 import { Toaster } from "react-hot-toast";
+import { lazy, Suspense } from "react";
+
+const DesignPage = lazy(() => import("./ui/DesignPage").then(module => ({ default: module.DesignPage })));
+const Checkout = lazy(() => import("./ui/Components/Checkout").then(module => ({ default: module.Checkout })));
 
 const assets = getAssetsToPreload();
 
@@ -22,10 +24,12 @@ export default observer(function App() {
     <StoreProvider>
       <Toaster />
       <Router>
-        <Routes>
-          <Route path="/" element={<DesignPage />} />
-          <Route path="/checkout" element={<Checkout />} />
-        </Routes>
+        <Suspense fallback={<LoadingScreen />}>
+          <Routes>
+            <Route path="/" element={<DesignPage />} />
+            <Route path="/checkout" element={<Checkout />} />
+          </Routes>
+        </Suspense>
       </Router>
     </StoreProvider>
   );

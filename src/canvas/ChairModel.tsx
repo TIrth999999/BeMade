@@ -1,9 +1,10 @@
 import { observer } from "mobx-react-lite";
 import { useGLTF, useTexture } from "@react-three/drei";
 import { useStore } from "../context/StoreContext";
-import { useMemo, useLayoutEffect } from "react";
+import { useMemo, useLayoutEffect, useEffect } from "react";
 import * as THREE from "three";
 import { useChairPositions } from "../utils/useChairPositions";
+import gsap from "gsap";
 
 export const ChairModel = observer(
   ({ view }: { view: string }) => {
@@ -68,6 +69,15 @@ export const ChairModel = observer(
       };
     }, [texturesLeg, texturesTop]);
 
+    useEffect(() => {
+      gsap.killTweensOf([materials.leg.emissive, materials.top.emissive]);
+      gsap.fromTo(
+        [materials.leg.emissive, materials.top.emissive],
+        { r: 0.5, g: 0.5, b: 0.5 },
+        { r: 0, g: 0, b: 0, duration: 0.25, ease: 'power2.out' }
+      );
+    }, [materials, color]); // Added color dependency
+
     const chairs = useMemo(() => {
       return Array.from({ length: chairStore.count }).map(() =>
         gltf.scene.clone(true)
@@ -105,7 +115,7 @@ export const ChairModel = observer(
           <primitive
             object={chairs[1]}
             position={[0.3, 0, 0]}
-            rotation={[0, Math.PI*2, 0]}
+            rotation={[0, Math.PI * 2, 0]}
           />
         </group>
       );

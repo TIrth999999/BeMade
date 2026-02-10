@@ -1,6 +1,58 @@
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../context/StoreContext";
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
+
+const DimensionSlider = ({
+  label,
+  value,
+  type,
+  min,
+  max,
+  step,
+  onUpdate
+}: {
+  label: string;
+  value: number;
+  type: "length" | "width";
+  min: number;
+  max: number;
+  step: number;
+  onUpdate: (type: "length" | "width", value: number, min: number, max: number, step: number) => void;
+}) => (
+  <div className="dimension-control">
+    <span className="dimension-label">{label}</span>
+
+    <div className="slider-container">
+      <button
+        className="slider-btn"
+        onClick={() => onUpdate(type, value - step, min, max, step)}
+      >
+        −
+      </button>
+
+      <input
+        type="range"
+        className="custom-slider"
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onChange={(e) =>
+          onUpdate(type, Number(e.target.value), min, max, step)
+        }
+      />
+
+      <button
+        className="slider-btn"
+        onClick={() => onUpdate(type, value + step, min, max, step)}
+      >
+        +
+      </button>
+    </div>
+
+    <span className="dimension-value">{value}mm</span>
+  </div>
+);
 
 export const DimensionControls = observer(() => {
   const { dimensionsStore, topShapeStore, baseStore } = useStore();
@@ -20,90 +72,80 @@ export const DimensionControls = observer(() => {
     lengthLabel = "Top Diameter";
   }
 
-  if (baseStore.selectedBase.id === "linea") {
+  const baseId = baseStore.selectedBase.id;
+
+  if (baseId === "linea") {
     lengthMin = 1600;
     lengthMax = 3200;
     widthMin = 800;
     widthMax = 1300;
-  }
-
-  if (baseStore.selectedBase.id === "lineaDome") {
+  } else if (baseId === "lineaDome") {
     lengthMin = 1580;
     lengthMax = 1580;
     widthMin = 1580;
     widthMax = 1580;
-  }
-
-
-  if (baseStore.selectedBase.id === "lineaContour") {
+  } else if (baseId === "lineaContour") {
     lengthMin = 2000;
     lengthMax = 3200;
     widthMin = 800;
     widthMax = 1300;
-  }
-
-
-  if (baseStore.selectedBase.id === "curva") {
+  } else if (baseId === "curva") {
     lengthMin = 1800;
     lengthMax = 3200;
     widthMin = 800;
     widthMax = 1300;
-  }
-
-
-  if (baseStore.selectedBase.id === "cradle") {
+  } else if (baseId === "cradle") {
     lengthMin = 1600;
     lengthMax = 3200;
     widthMin = 800;
     widthMax = 1300;
-  }
-
-
-  if (baseStore.selectedBase.id === "twiste") {
+  } else if (baseId === "twiste") {
     lengthMin = 2200;
     lengthMax = 3200;
     widthMin = 800;
     widthMax = 1300;
-  }
-
-
-  if (baseStore.selectedBase.id === "axis") {
+  } else if (baseId === "axis") {
+    lengthMin = 1600;
+    lengthMax = 3200;
+    widthMin = 800;
+    widthMax = 1300;
+  } else if (baseId === "moon") {
     lengthMin = 1600;
     lengthMax = 3200;
     widthMin = 800;
     widthMax = 1300;
   }
-
-
-  if (baseStore.selectedBase.id === "moon") {
-    lengthMin = 1600;
-    lengthMax = 3200;
-    widthMin = 800;
-    widthMax = 1300;
-  }
-
-
 
   useEffect(() => {
     const currentLength = dimensionsStore.length;
     const currentWidth = dimensionsStore.width;
+    let newLength = currentLength;
+    let newWidth = currentWidth;
+    let changed = false;
 
     if (currentLength < lengthMin || currentLength > lengthMax) {
-      const clampedLength = Math.max(lengthMin, Math.min(lengthMax, currentLength));
-      dimensionsStore.setLength(clampedLength);
+      newLength = Math.max(lengthMin, Math.min(lengthMax, currentLength));
+      changed = true;
     }
 
     if (!isUniform && (currentWidth < widthMin || currentWidth > widthMax)) {
-      const clampedWidth = Math.max(widthMin, Math.min(widthMax, currentWidth));
-      dimensionsStore.setWidth(clampedWidth);
+      newWidth = Math.max(widthMin, Math.min(widthMax, currentWidth));
+      changed = true;
     }
 
     if (isUniform && currentWidth !== currentLength) {
-      dimensionsStore.setWidth(currentLength);
+      newWidth = newLength;
+      changed = true;
     }
-  }, [baseStore.selectedBase.id, isUniform, lengthMin, lengthMax, widthMin, widthMax]);
 
-  const handleUpdate = (
+    if (changed) {
+      if (newLength !== currentLength) dimensionsStore.setLength(newLength);
+      if (newWidth !== currentWidth) dimensionsStore.setWidth(newWidth);
+    }
+
+  }, [baseId, isUniform, lengthMin, lengthMax, widthMin, widthMax, dimensionsStore]);
+
+  const handleUpdate = useCallback((
     type: "length" | "width",
     value: number,
     min: number,
@@ -119,50 +161,7 @@ export const DimensionControls = observer(() => {
     } else {
       dimensionsStore.setWidth(clamped);
     }
-  };
-
-  const renderSlider = (
-    label: string,
-    value: number,
-    type: "length" | "width",
-    min: number,
-    max: number,
-    offset: number
-  ) => (
-    <div className="dimension-control">
-      <span className="dimension-label">{label}</span>
-
-      <div className="slider-container">
-        <button
-          className="slider-btn"
-          onClick={() => handleUpdate(type, value - offset, min, max, offset)}
-        >
-          −
-        </button>
-
-        <input
-          type="range"
-          className="custom-slider"
-          min={min}
-          max={max}
-          step={offset}
-          value={value}
-          onChange={(e) =>
-            handleUpdate(type, Number(e.target.value), min, max, offset)
-          }
-        />
-
-        <button
-          className="slider-btn"
-          onClick={() => handleUpdate(type, value + offset, min, max, offset)}
-        >
-          +
-        </button>
-      </div>
-
-      <span className="dimension-value">{value}mm</span>
-    </div>
-  );
+  }, [dimensionsStore, isUniform]);
 
   return (
     <div className="panel-section">
@@ -175,24 +174,27 @@ export const DimensionControls = observer(() => {
         <p>All table heights are fixed between <strong>730mm to 750mm</strong></p>
       </div>
 
-      {renderSlider(
-        lengthLabel,
-        dimensionsStore.length,
-        "length",
-        lengthMin,
-        lengthMax,
-        100
-      )}
+      <DimensionSlider
+        label={lengthLabel}
+        value={dimensionsStore.length}
+        type="length"
+        min={lengthMin}
+        max={lengthMax}
+        step={100}
+        onUpdate={handleUpdate}
+      />
 
       {!isUniform &&
-        renderSlider(
-          "Top Width",
-          dimensionsStore.width,
-          "width",
-          widthMin,
-          widthMax,
-          50
-        )}
+        <DimensionSlider
+          label="Top Width"
+          value={dimensionsStore.width}
+          type="width"
+          min={widthMin}
+          max={widthMax}
+          step={50}
+          onUpdate={handleUpdate}
+        />
+      }
 
     </div>
   );

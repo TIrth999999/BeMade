@@ -1,8 +1,8 @@
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
 import { BaseModel } from "./BaseModel";
 import { TopModel } from "./TopModel";
-import { ContactShadows, Environment } from "@react-three/drei";
+import { ContactShadows, PerformanceMonitor } from "@react-three/drei";
 import * as THREE from 'three';
 import { CameraSetup } from "./Camera";
 import { ChairModel } from "./ChairModel";
@@ -19,7 +19,7 @@ export const ScreenshotHandler = observer(() => {
     invalidate();
 
     requestAnimationFrame(() => {
-      gl.render(scene, camera); 
+      gl.render(scene, camera);
       const dataURL = gl.domElement.toDataURL("image/png");
 
       uiStore.setScreenshot(dataURL);
@@ -59,8 +59,8 @@ const ChairLoadingHandler = observer(() => {
 
 
 export const CanvasRoot = observer(() => {
-
   const { cameraPositionStore, baseStore, chairStore, topShapeStore, topColorStore, uiStore, dimensionsStore } = useStore();
+  const [dpr, setDpr] = useState(1.5);
 
   const isSceneReady =
     !uiStore.baseLoading &&
@@ -80,22 +80,28 @@ export const CanvasRoot = observer(() => {
 
 
   return (
-    <Canvas shadows dpr={[1, 2]} camera={{ fov: cameraPositionStore.selectedCameraPosition.fov }}
+    <Canvas
+      shadows
+      dpr={dpr}
+      camera={{ fov: cameraPositionStore.selectedCameraPosition.fov }}
       gl={{
         antialias: true,
         preserveDrawingBuffer: true,
         outputColorSpace: THREE.SRGBColorSpace,
         toneMapping: THREE.ACESFilmicToneMapping,
-        toneMappingExposure: 1.02
-      }}>
+        toneMappingExposure: 1.02,
+        powerPreference: "high-performance"
+      }}
+    >
+      <PerformanceMonitor onIncline={() => setDpr(2)} onDecline={() => setDpr(1)} />
       <CameraSetup />
 
       <directionalLight
         position={[-6, 7, 2]}
         intensity={1.9}
         castShadow
-        shadow-mapSize-width={2048}
-        shadow-mapSize-height={2048}
+        shadow-mapSize-width={1024}
+        shadow-mapSize-height={1024}
         shadow-camera-left={-8}
         shadow-camera-right={8}
         shadow-camera-top={8}
@@ -116,12 +122,6 @@ export const CanvasRoot = observer(() => {
       />
 
       <ambientLight intensity={0.7} />
-
-      <Environment 
-        preset='studio'
-        blur={0.25}
-        environmentIntensity={0.1}
-      />
 
       {cameraPositionStore.selectedCameraPositionName !== "twoChairView" && (
         <Suspense fallback={<BaseLoadingHandler />}>

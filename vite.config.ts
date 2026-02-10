@@ -9,4 +9,15 @@ export default defineConfig({
       },
     }),
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom', 'mobx', 'mobx-react-lite'],
+          three: ['three', '@react-three/fiber', '@react-three/drei', '@react-three/postprocessing'],
+          gsap: ['gsap'],
+        },
+      },
+    },
+  },
 })

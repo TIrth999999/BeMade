@@ -1,4 +1,5 @@
 import { BaseSelector } from "./Components/BaseSelector";
+import { useEffect } from "react";
 import { ChairSelector } from "./Components/ChairSelector";
 import { ColorSelector } from "./Components/ColorSelector";
 import { DimensionControls } from "./Components/DimensionControls";
@@ -12,32 +13,33 @@ type RightPanelProps = {
 
 export const RightPanel = ({ setActiveStep }: RightPanelProps) => {
 
-  let scrollTimeout: ReturnType<typeof setTimeout> | null = null;
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveStep(entry.target.id);
+          }
+        });
+      },
+      {
+        root: document.querySelector(".right-panel"),
+        threshold: 0.6,
+      }
+    );
 
-  const handleScroll = () => {
     const panel = document.querySelector(".right-panel");
-    if (!panel) return;
-
-    if (scrollTimeout) clearTimeout(scrollTimeout);
-
-    scrollTimeout = setTimeout(() => {
+    if (panel) {
       const sections = panel.querySelectorAll("div[id]");
-      let current = "";
+      sections.forEach((section) => observer.observe(section));
+    }
 
-      sections.forEach((section) => {
-        const rect = section.getBoundingClientRect();
-        if (rect.top <= panel.getBoundingClientRect().top + 50) {
-          current = section.id;
-        }
-      });
-
-      if (current) setActiveStep(current);
-    }, 20);
-  };
+    return () => observer.disconnect();
+  }, [setActiveStep]);
 
 
   return (
-    <div className="right-panel" onScroll={handleScroll}>
+    <div className="right-panel">
       <div id="baseSelector"><BaseSelector /></div>
       <div id="colorSelector"><ColorSelector /></div>
       <div id="topColorSelector"><TopColorSelector /></div>

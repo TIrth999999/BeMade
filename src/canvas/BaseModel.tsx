@@ -4,6 +4,7 @@ import { useStore } from "../context/StoreContext";
 import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import baseShapes from "../data/baseShapes.json";
+import gsap from "gsap";
 
 baseShapes.forEach(shape => {
   useGLTF.preload(shape.glbUrl);
@@ -12,88 +13,42 @@ baseShapes.forEach(shape => {
   }
 });
 
-export const BaseModel = observer(() => {
-  const { baseStore, dimensionsStore } = useStore();
-  const prevBaseId = useRef<string | null>(null);
-
+const SingleBaseModel = observer(({ shape, isVisible, sharedMaterial }: { shape: any, isVisible: boolean, sharedMaterial: THREE.MeshStandardMaterial }) => {
+  const { dimensionsStore } = useStore();
 
   const glbUrl = useMemo(() => {
     if (
-      baseStore.selectedBase.id === "cradle" &&
-      dimensionsStore.length < 2500
+      shape.id === "cradle" &&
+      dimensionsStore.length < 2500 &&
+      shape.smallGlbUrl
     ) {
-      return baseStore.selectedBase.smallGlbUrl;
+      return shape.smallGlbUrl;
     }
-    return baseStore.selectedBase.glbUrl;
-  }, [
-    baseStore.selectedBase.id,
-    baseStore.selectedBase.glbUrl,
-    baseStore.selectedBase.smallGlbUrl,
-    dimensionsStore.length,
-  ]);
+    return shape.glbUrl;
+  }, [shape, dimensionsStore.length]);
 
-  const gltf = useGLTF(glbUrl);
-  const color = baseStore.selectedBaseColor;
-
-  const textures = useTexture({
-    map: color.baseUrl,
-    normalMap: color.normalUrl,
-    metalnessMap: color.metalnessUrl,
-    roughnessMap: color.roughnessUrl,
-  });
-  textures.map.colorSpace = THREE.SRGBColorSpace;
-  textures.map.anisotropy = 16;
-  textures.normalMap.colorSpace = THREE.LinearSRGBColorSpace;
-  textures.roughnessMap.colorSpace = THREE.LinearSRGBColorSpace;
-  textures.metalnessMap.colorSpace = THREE.LinearSRGBColorSpace;
-
-  Object.values(textures).forEach((texture) => {
-    texture.flipY = false;
-  });
-
-  let distance = 0;
+  const gltf = useGLTF(glbUrl) as any;
 
   useEffect(() => {
     gltf.scene.traverse((child: any) => {
       if (!child.isMesh) return;
 
-      distance += Math.max(distance, child.geometry.boundingSphere.radius);
-
-      if (!child.material || child.material.type !== 'MeshStandardMaterial') {
-        child.material = new THREE.MeshStandardMaterial();
-      }
-
-      if(baseStore.selectedBase.id === "linea" || baseStore.selectedBase.id === "lineadome" || baseStore.selectedBase.id === "lineaContour"){
-        child.material.color = new THREE.Color('#f5e8d0');
-      }
-
-      // child.material.color = new THREE.Color('#f5e8d0'),
-
-        child.material.map = textures.map;
-      child.material.normalMap = textures.normalMap;
-      child.material.roughnessMap = textures.roughnessMap;
-      child.material.metalnessMap = textures.metalnessMap;
-      child.material.metalness = 0.45;
-      child.material.roughness = 0.65;
-
-      child.material.needsUpdate = true;
+      child.material = sharedMaterial;
       child.castShadow = true;
       child.receiveShadow = false;
     });
-  }, [gltf.scene, textures, baseStore.selectedBaseId]);
+  }, [gltf.scene, sharedMaterial]);
 
 
   const originalPositions = useRef<{ left: number; right: number } | null>(null);
 
   useEffect(() => {
-    if (baseStore.selectedBase.id !== "linea" && baseStore.selectedBase.id !== "curva" && baseStore.selectedBase.id !== "twiste" && baseStore.selectedBase.id !== "moon") return;
-    originalPositions.current = null;
-    prevBaseId.current = baseStore.selectedBaseId;
-  }, [baseStore.selectedBaseId, baseStore.selectedBase.id, gltf.scene]);
+    if (shape.id !== "linea" && shape.id !== "curva" && shape.id !== "twiste" && shape.id !== "moon") return;
+  }, [glbUrl]);
 
   useLayoutEffect(() => {
-    if (prevBaseId.current !== baseStore.selectedBaseId) return;
-    if (baseStore.selectedBase.id !== "linea" && baseStore.selectedBase.id !== "curva" && baseStore.selectedBase.id !== "twiste" && baseStore.selectedBase.id !== "moon") return;
+    if (!isVisible) return;
+    if (shape.id !== "linea" && shape.id !== "curva" && shape.id !== "twiste" && shape.id !== "moon") return;
     if (!gltf.scene) return;
 
     const meshes: any[] = [];
@@ -106,6 +61,30 @@ export const BaseModel = observer(() => {
     let rightMesh = meshes[0];
     let leftX = Infinity;
     let rightX = -Infinity;
+
+
+    if (!originalPositions.current) {
+      meshes.forEach((mesh) => {
+        mesh.geometry.computeBoundingBox();
+        const center = new THREE.Vector3();
+        mesh.geometry.boundingBox.getCenter(center);
+        mesh.localToWorld(center);
+
+        if (center.x < leftX) {
+          leftX = center.x;
+          leftMesh = mesh;
+        }
+        if (center.x > rightX) {
+          rightX = center.x;
+          rightMesh = mesh;
+        }
+      });
+
+      originalPositions.current = {
+        left: leftMesh.position.x,
+        right: rightMesh.position.x,
+      };
+    }
 
     meshes.forEach((mesh) => {
       mesh.geometry.computeBoundingBox();
@@ -125,22 +104,85 @@ export const BaseModel = observer(() => {
 
     let centerX = (leftX + rightX) / 2;
 
-    if (!originalPositions.current) {
-      originalPositions.current = {
-        left: leftMesh.position.x,
-        right: rightMesh.position.x,
-      };
-    }
-
     const maxShift = (centerX - leftX);
 
     const shiftFactor = 1 - Math.min(dimensionsStore.length, 3100) / 3100;
-    leftMesh.position.x = originalPositions.current.left + maxShift * shiftFactor;
-    rightMesh.position.x = originalPositions.current.right - maxShift * shiftFactor;
 
-  }, [dimensionsStore.length, gltf.scene, baseStore.selectedBaseId, baseStore.selectedBase]);
+    if (originalPositions.current) {
+      leftMesh.position.x = originalPositions.current.left + maxShift * shiftFactor;
+      rightMesh.position.x = originalPositions.current.right - maxShift * shiftFactor;
+    }
 
-  return <>
-    <primitive object={gltf.scene} />
-  </>;
+  }, [dimensionsStore.length, gltf.scene, isVisible]);
+
+  return <primitive object={gltf.scene} visible={isVisible} />;
+});
+
+export const BaseModel = observer(() => {
+  const { baseStore } = useStore();
+  const color = baseStore.selectedBaseColor;
+
+  const textures = useTexture({
+    map: color.baseUrl,
+    normalMap: color.normalUrl,
+    metalnessMap: color.metalnessUrl,
+    roughnessMap: color.roughnessUrl,
+  });
+
+  textures.map.colorSpace = THREE.SRGBColorSpace;
+  textures.map.anisotropy = 16;
+  textures.normalMap.colorSpace = THREE.LinearSRGBColorSpace;
+  textures.roughnessMap.colorSpace = THREE.LinearSRGBColorSpace;
+  textures.metalnessMap.colorSpace = THREE.LinearSRGBColorSpace;
+
+  Object.values(textures).forEach((texture) => {
+    texture.flipY = false;
+  });
+
+  const sharedMaterial = useMemo(() => {
+    const mat = new THREE.MeshStandardMaterial();
+    mat.roughness = 0.65;
+    mat.metalness = 0.45;
+    return mat;
+  }, []);
+
+  useEffect(() => {
+    sharedMaterial.map = textures.map;
+    sharedMaterial.normalMap = textures.normalMap;
+    sharedMaterial.roughnessMap = textures.roughnessMap;
+    sharedMaterial.metalnessMap = textures.metalnessMap;
+
+    const id = baseStore.selectedBase.id;
+    if (id === "linea" || id === "lineadome" || id === "lineaContour") {
+      sharedMaterial.color.set('#f5e8d0');
+    } else {
+      sharedMaterial.color.set('white');
+    }
+
+    sharedMaterial.needsUpdate = true;
+
+    // Smooth transition using emissive flash instead of opacity
+    // We kill previous tweens to avoid conflicts
+    gsap.killTweensOf(sharedMaterial.emissive);
+
+    gsap.fromTo(
+      sharedMaterial.emissive,
+      { r: 0.5, g: 0.5, b: 0.5 },
+      { r: 0, g: 0, b: 0, duration: 0.25, ease: "power2.out" }
+    );
+
+  }, [textures, baseStore.selectedBase.id, sharedMaterial, color]); // Added 'color' (selectedBaseColor state) dependency to ensure update
+
+  return (
+    <>
+      {baseShapes.map((shape) => (
+        <SingleBaseModel
+          key={shape.id}
+          shape={shape}
+          isVisible={baseStore.selectedBase.id === shape.id}
+          sharedMaterial={sharedMaterial}
+        />
+      ))}
+    </>
+  );
 });

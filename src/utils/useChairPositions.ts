@@ -53,6 +53,61 @@ export const useChairPositions = (): ChairTransform[] => {
             }
         };
 
+        const computeOvalChairs = () => {
+            const a = (length / 2000) + chairOffset; // Semi-major axis (X)
+            const b = (width / 2000) + chairOffset;  // Semi-minor axis (Z)
+
+            // To distribute chairs evenly, we can't just step the angle linearly because arc length varies.
+            // PROPER APPROACH: Equidistant points along the ellipse perimeter.
+            // Approximation: Use a lookup table for arc length.
+
+            // 1. Calculate total perimeter approximation (Ramanujan)
+            // p ≈ π [ 3(a+b) - sqrt( (3a+b)(a+3b) ) ]
+            // But we need to place points. 
+            // Simple approach for "Fast": Step angle, but correct for visual bunching?
+            // Actually, for a typical table, simple angular distribution is often "good enough" if aspect ratio isn't extreme.
+            // But if L >> W, poles get bunched.
+
+            // let's try a simple angular step first, but modulated by radius to spread them out on long sides?
+            // or just use the ellipse parametric equations with uniform angle steps. 
+            // The reference image looks fairly uniform.
+
+            const step = (Math.PI * 2) / count;
+
+            for (let i = 0; i < count; i++) {
+                // Adjust start angle to align nicely (e.g. start at top or right)
+                // -Math.PI/2 starts at top (negative Z)
+                const angle = (i * step) - (Math.PI / 2);
+
+                const x = Math.cos(angle) * a;
+                const z = Math.sin(angle) * b;
+
+                // Orientation: Face center
+                // Normal to ellipse at (x,z) is (x/a^2, z/b^2). 
+                // Chair facing center is simply atan2(-x, -z). (Opposite to position vector)
+                // Tangent-normal might be better if we want them strictly perpendicular to edge.
+
+                // Normal vector to ellipse surface:
+                // Nx = x / a^2
+                // Nz = z / b^2
+                // We want the chair to face INWARDS, so opposite of Normal.
+                // But simplified "face center" is often desired. 
+                // Let's use the layout from reference: they look perpendicular to the table edge.
+
+                const nx = x / (a * a);
+                const nz = z / (b * b);
+
+                // Angle of the normal vector pointing OUT
+                // Chair should face IN (opposite)
+                const rotationY = Math.atan2(nx, nz) + Math.PI;
+
+                transforms.push({
+                    position: [x, 0, z],
+                    rotation: [0, rotationY, 0],
+                });
+            }
+        };
+
         const computeRectangleLikeChairs = () => {
             const { longSide, shortSide } = resolveSeatDistribution(count);
 
@@ -164,8 +219,10 @@ export const useChairPositions = (): ChairTransform[] => {
             case "rectangle":
             case "oblong":
             case "capsule":
-            case "oval":
                 computeRectangleLikeChairs();
+                break;
+            case "oval":
+                computeOvalChairs();
                 break;
             case "round":
             case "roundCircle":
