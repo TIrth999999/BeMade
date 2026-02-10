@@ -2,7 +2,7 @@ import { Suspense, useEffect } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
 import { BaseModel } from "./BaseModel";
 import { TopModel } from "./TopModel";
-import { ContactShadows } from "@react-three/drei";
+import { ContactShadows, Environment } from "@react-three/drei";
 import * as THREE from 'three';
 import { CameraSetup } from "./Camera";
 import { ChairModel } from "./ChairModel";
@@ -116,6 +116,12 @@ export const CanvasRoot = observer(() => {
       />
 
       <ambientLight intensity={0.7} />
+
+      <Environment 
+        preset='studio'
+        blur={0.25}
+        environmentIntensity={0.1}
+      />
 
       {cameraPositionStore.selectedCameraPositionName !== "twoChairView" && (
         <Suspense fallback={<BaseLoadingHandler />}>

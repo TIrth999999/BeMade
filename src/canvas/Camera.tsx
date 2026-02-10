@@ -24,7 +24,7 @@ export const CameraSetup = observer(() => {
     y: pos[1],
     z: pos[2],
     duration: 1.2,
-    ease: "power2.inOut",
+    ease: "qubic.inOut",
     onUpdate: () => {
       camera.lookAt(target);
       controlsRef.current?.target.copy(target);
