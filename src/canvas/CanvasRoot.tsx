@@ -59,7 +59,7 @@ const ChairLoadingHandler = observer(() => {
 
 
 export const CanvasRoot = observer(() => {
-  const { cameraPositionStore, uiStore } = useStore();
+  const { cameraPositionStore, uiStore, baseStore, chairStore, topShapeStore, dimensionsStore } = useStore();
   const [dpr, setDpr] = useState(1.5);
 
   const isSceneReady =
@@ -67,6 +67,13 @@ export const CanvasRoot = observer(() => {
     !uiStore.topLoading &&
     !uiStore.chairLoading;
 
+  const shadowKey = [
+    baseStore.selectedBase.id,
+    chairStore.count,
+    topShapeStore.selectedTopShape.id,
+    dimensionsStore.length,
+    dimensionsStore.width,
+  ].join("-");
 
   return (
     <Canvas
@@ -132,6 +139,7 @@ export const CanvasRoot = observer(() => {
 
       {isSceneReady && (
         <ContactShadows
+          key={shadowKey}
           position={[0, 0, 0]}
           scale={10}
           blur={0.35}

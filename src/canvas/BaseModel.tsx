@@ -14,7 +14,7 @@ baseShapes.forEach(shape => {
   }
 });
 
-const SingleBaseModel = ({ shape, isVisible, sharedMaterial }: { shape: any, isVisible: boolean, sharedMaterial: THREE.MeshStandardMaterial }) => {
+const SingleBaseModel = observer(({ shape, isVisible, sharedMaterial }: { shape: any, isVisible: boolean, sharedMaterial: THREE.MeshStandardMaterial }) => {
   const { dimensionsStore } = useStore();
 
   const glbUrl = useMemo(() => {
@@ -31,9 +31,8 @@ const SingleBaseModel = ({ shape, isVisible, sharedMaterial }: { shape: any, isV
   const gltf = useGLTF(glbUrl) as any;
 
   const [ready, setReady] = useState(false);
-  const { uiStore } = useStore(); // Get uiStore
+  const { uiStore } = useStore();
 
-  // Force loading state on mount until ready
   useLayoutEffect(() => {
     setReady(false);
     uiStore.setBaseLoading(true);
@@ -42,10 +41,6 @@ const SingleBaseModel = ({ shape, isVisible, sharedMaterial }: { shape: any, isV
     }
   }, [shape.id]);
 
-  /* 
-   * Changed to useLayoutEffect to prevent "flash" of untextured/default model before material is applied.
-   * This ensures material assignments happen synchronously before the browser paints the next frame.
-   */
   useLayoutEffect(() => {
     if (!gltf.scene) return;
 
@@ -57,13 +52,10 @@ const SingleBaseModel = ({ shape, isVisible, sharedMaterial }: { shape: any, isV
       child.receiveShadow = false;
     });
 
-    // Mark as ready after material application
-    // We use a small timeout to let the browser process the GPU upload frame if needed, 
-    // or just let react commit the update.
     const t = setTimeout(() => {
       setReady(true);
       uiStore.setBaseLoading(false);
-    }, 50); // 50ms buffer to hide any initial frame glitch
+    }, 50);
 
     return () => clearTimeout(t);
 
@@ -145,11 +137,10 @@ const SingleBaseModel = ({ shape, isVisible, sharedMaterial }: { shape: any, isV
 
   }, [dimensionsStore.length, gltf.scene, isVisible]);
 
-  // Only render if ready to avoid flash
   if (!ready) return null;
 
   return <primitive object={gltf.scene} visible={isVisible} />;
-};
+});
 
 export const BaseModel = observer(() => {
   const { baseStore } = useStore();
@@ -170,11 +161,9 @@ export const BaseModel = observer(() => {
   }, []);
 
   useEffect(() => {
-    // Sync loading state with UI store
     baseStore.root.uiStore.setBaseLoading(loading);
   }, [loading, baseStore.root.uiStore]);
 
-  // Material Properties Update
   useLayoutEffect(() => {
     if (!textures) return;
 
@@ -192,13 +181,11 @@ export const BaseModel = observer(() => {
       sharedMaterial.color.set('white');
     }
 
-    // Ensure no emissive flash
     sharedMaterial.emissive.setHex(0x000000);
 
     sharedMaterial.needsUpdate = true;
   }, [textures, baseStore.selectedBase.id, sharedMaterial]);
 
-  // Flash Transition - ONLY on Texture Change (Color Swap)
   useLayoutEffect(() => {
     gsap.killTweensOf(sharedMaterial.emissive);
     gsap.fromTo(
@@ -206,7 +193,7 @@ export const BaseModel = observer(() => {
       { r: 0.5, g: 0.5, b: 0.5 },
       { r: 0, g: 0, b: 0, duration: 0.25, ease: "power2.inOut" }
     );
-  }, [textures, sharedMaterial]); // Removed ID dependency here
+  }, [textures, sharedMaterial]);
 
   return (
     <>

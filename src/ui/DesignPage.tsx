@@ -17,7 +17,6 @@ export const DesignPage = observer(() => {
     const chairCount = chairStore.count;
     const allCameraPositions = cameraPositionStore.cameraPositions;
     const cameraPositions = chairCount === 0 ? allCameraPositions.slice(0, 4) : allCameraPositions;
-    // console.log("Using camera positions:", cameraPositions.map(c => c.name));
     const selectedIdx = cameraPositions.findIndex(
         (c) => c.name === cameraPositionStore.selectedCameraPositionName
     );

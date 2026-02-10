@@ -12,7 +12,7 @@ topShapes.forEach(shape => {
   useGLTF.preload(shape.mdfUrl);
 });
 
-const SingleTopModel = ({ shape, isVisible, baseMaterial, mdfMaterial }: { shape: any, isVisible: boolean, baseMaterial: THREE.MeshStandardMaterial, mdfMaterial: THREE.MeshStandardMaterial }) => {
+const SingleTopModel = observer(({ shape, isVisible, baseMaterial, mdfMaterial }: { shape: any, isVisible: boolean, baseMaterial: THREE.MeshStandardMaterial, mdfMaterial: THREE.MeshStandardMaterial }) => {
   const { dimensionsStore } = useStore();
 
   const gltf = useGLTF(shape.glbUrl) as any;
@@ -38,13 +38,19 @@ const SingleTopModel = ({ shape, isVisible, baseMaterial, mdfMaterial }: { shape
     const map = baseMaterial.map;
     if (!map) return;
 
-    const scaleX = dimensionsStore.length / shape.defaultLength;
-    const scaleY = dimensionsStore.width / shape.defaultWidth;
+    const isCircleOrSquare = shape.id === "roundCircle" || shape.id === "square";
+    const scaleX = isCircleOrSquare
+      ? dimensionsStore.length / shape.defaultLength
+      : dimensionsStore.length / shape.defaultLength;
+    const scaleY = isCircleOrSquare
+      ? dimensionsStore.length / shape.defaultLength
+      : dimensionsStore.width / shape.defaultWidth;
 
-    if (baseMaterial.map) baseMaterial.map.center.set(0.5, 0.8);
+    const centerX = isCircleOrSquare ? 0.8 : 0.5;
+    const centerY = 0.8;
 
     const setProps = (tex: THREE.Texture) => {
-      tex.center.set(0.5, 0.8);
+      tex.center.set(centerX, centerY);
       tex.repeat.set(scaleX, scaleY);
     };
 
@@ -53,13 +59,25 @@ const SingleTopModel = ({ shape, isVisible, baseMaterial, mdfMaterial }: { shape
     if (baseMaterial.roughnessMap) setProps(baseMaterial.roughnessMap);
     if (baseMaterial.metalnessMap) setProps(baseMaterial.metalnessMap);
 
-  }, [isVisible, dimensionsStore.length, dimensionsStore.width, shape, baseMaterial.map]);
+    if (mdfMaterial.map) setProps(mdfMaterial.map);
+    if (mdfMaterial.normalMap) setProps(mdfMaterial.normalMap);
+    if (mdfMaterial.roughnessMap) setProps(mdfMaterial.roughnessMap);
+    if (mdfMaterial.metalnessMap) setProps(mdfMaterial.metalnessMap);
 
-  const scale: [number, number, number] = [
-    dimensionsStore.length / shape.defaultLength,
-    1,
-    dimensionsStore.width / shape.defaultWidth,
-  ];
+  }, [isVisible, dimensionsStore.length, dimensionsStore.width, shape, baseMaterial.map, mdfMaterial]);
+
+  const isCircleOrSquare = shape.id === "roundCircle" || shape.id === "square";
+  const scale: [number, number, number] = isCircleOrSquare
+    ? [
+      dimensionsStore.length / shape.defaultLength,
+      1,
+      dimensionsStore.length / shape.defaultLength,
+    ]
+    : [
+      dimensionsStore.length / shape.defaultLength,
+      1,
+      dimensionsStore.width / shape.defaultWidth,
+    ];
 
   return (
     <group visible={isVisible}>
@@ -67,7 +85,7 @@ const SingleTopModel = ({ shape, isVisible, baseMaterial, mdfMaterial }: { shape
       <primitive object={gltf2.scene} scale={scale} />
     </group>
   );
-};
+});
 
 export const TopModel = observer(() => {
   const {

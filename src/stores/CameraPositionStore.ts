@@ -60,7 +60,7 @@ export class CameraPositionStore {
     startScreenshotView(name: string) {
         this.isScreenshotFlow = true;
         if (this.selectedCameraPositionName === name) {
-            // Already at chairView, trigger screenshot immediately
+
             if (this.root.uiStore) {
                 this.root.uiStore.requestScreenshot();
                 this.endScreenshotFlow();

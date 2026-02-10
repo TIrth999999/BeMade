@@ -180,7 +180,7 @@ body {
 
 /* ===== RIGHT PANEL ===== */
 .right-panel {
-    flex: 0 0 36%;
+    flex: 0 0 38%;
     background: white;
     overflow-y: auto;
     display: flex;
@@ -1829,7 +1829,7 @@ body {
         z-index: 2;
     }
 
-    .color-swatch.active::before{
+    .color-swatch.active::before {
         content: '';
         position: absolute;
         top: 6px;
@@ -1842,7 +1842,7 @@ body {
         z-index: 2;
     }
 
-    .color-grid-base .color-swatch.active::before{
+    .color-grid-base .color-swatch.active::before {
         content: '';
         position: absolute;
         top: 2px;

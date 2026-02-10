@@ -44,14 +44,12 @@ export const ChairModel = observer(
     useEffect(() => {
       if (!texturesLeg || !texturesTop) return;
 
-      // Update Leg Material
       materials.leg.map = texturesLeg.map;
       materials.leg.normalMap = texturesLeg.normalMap;
       materials.leg.roughnessMap = texturesLeg.roughnessMap;
       materials.leg.metalnessMap = texturesLeg.metalnessMap;
       materials.leg.needsUpdate = true;
 
-      // Update Top Material
       materials.top.map = texturesTop.map;
       materials.top.normalMap = texturesTop.normalMap;
       materials.top.roughnessMap = texturesTop.roughnessMap;
