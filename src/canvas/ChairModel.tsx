@@ -1,9 +1,10 @@
 import { observer } from "mobx-react-lite";
-import { useGLTF, useTexture } from "@react-three/drei";
+import { useGLTF } from "@react-three/drei";
 import { useStore } from "../context/StoreContext";
 import { useMemo, useLayoutEffect, useEffect } from "react";
 import * as THREE from "three";
 import { useChairPositions } from "../utils/useChairPositions";
+import { useTextureNonSuspense } from "../hooks/useTextureNonSuspense";
 import gsap from "gsap";
 
 export const ChairModel = observer(
@@ -16,67 +17,58 @@ export const ChairModel = observer(
 
     const gltf = useGLTF(shape.glbUrl);
 
-    const texturesLeg = useTexture({
+
+    const { textures: texturesLeg } = useTextureNonSuspense({
       map: color.chairLegColor,
       normalMap: color.chairLegNormal,
       metalnessMap: color.chairLegMetalness,
       roughnessMap: color.chairLegRoughness
     });
 
-    const texturesTop = useTexture({
+    const { textures: texturesTop } = useTextureNonSuspense({
       map: color.chairTopColor,
       normalMap: color.chairTopNormal,
       metalnessMap: color.chairTopMetalness,
       roughnessMap: color.chairTopRoughness
     });
 
-    useMemo(() => {
-      const setupSRGB = (t: any) => {
-        t.colorSpace = THREE.SRGBColorSpace;
-        t.anisotropy = 16;
-        t.flipY = false;
-      };
-      const setupLinear = (t: any) => {
-        t.colorSpace = THREE.LinearSRGBColorSpace;
-        t.flipY = false;
-      };
-
-      setupSRGB(texturesLeg.map);
-      setupLinear(texturesLeg.normalMap);
-      setupLinear(texturesLeg.roughnessMap);
-      setupLinear(texturesLeg.metalnessMap);
-
-      setupSRGB(texturesTop.map);
-      setupLinear(texturesTop.normalMap);
-      setupLinear(texturesTop.roughnessMap);
-      setupLinear(texturesTop.metalnessMap);
-    }, [texturesLeg, texturesTop]);
-
     const materials = useMemo(() => {
       return {
         leg: new THREE.MeshStandardMaterial({
-          map: texturesLeg.map,
-          normalMap: texturesLeg.normalMap,
-          roughnessMap: texturesLeg.roughnessMap,
-          metalnessMap: texturesLeg.metalnessMap,
         }),
         top: new THREE.MeshStandardMaterial({
-          map: texturesTop.map,
-          normalMap: texturesTop.normalMap,
-          roughnessMap: texturesTop.roughnessMap,
-          metalnessMap: texturesTop.metalnessMap,
         })
       };
-    }, [texturesLeg, texturesTop]);
+    }, []);
+
+    useEffect(() => {
+      if (!texturesLeg || !texturesTop) return;
+
+      // Update Leg Material
+      materials.leg.map = texturesLeg.map;
+      materials.leg.normalMap = texturesLeg.normalMap;
+      materials.leg.roughnessMap = texturesLeg.roughnessMap;
+      materials.leg.metalnessMap = texturesLeg.metalnessMap;
+      materials.leg.needsUpdate = true;
+
+      // Update Top Material
+      materials.top.map = texturesTop.map;
+      materials.top.normalMap = texturesTop.normalMap;
+      materials.top.roughnessMap = texturesTop.roughnessMap;
+      materials.top.metalnessMap = texturesTop.metalnessMap;
+      materials.top.needsUpdate = true;
+    }, [materials, texturesLeg, texturesTop]);
 
     useEffect(() => {
       gsap.killTweensOf([materials.leg.emissive, materials.top.emissive]);
+
       gsap.fromTo(
         [materials.leg.emissive, materials.top.emissive],
         { r: 0.5, g: 0.5, b: 0.5 },
         { r: 0, g: 0, b: 0, duration: 0.25, ease: 'power2.out' }
       );
-    }, [materials, color]); // Added color dependency
+
+    }, [materials, color]);
 
     const chairs = useMemo(() => {
       return Array.from({ length: chairStore.count }).map(() =>

@@ -1,10 +1,11 @@
 import { observer } from "mobx-react-lite";
-import { useGLTF, useTexture } from "@react-three/drei";
+import { useGLTF } from "@react-three/drei";
 import { useStore } from "../context/StoreContext";
 import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import baseShapes from "../data/baseShapes.json";
 import gsap from "gsap";
+import { useTextureNonSuspense } from "../hooks/useTextureNonSuspense";
 
 baseShapes.forEach(shape => {
   useGLTF.preload(shape.glbUrl);
@@ -122,21 +123,11 @@ export const BaseModel = observer(() => {
   const { baseStore } = useStore();
   const color = baseStore.selectedBaseColor;
 
-  const textures = useTexture({
+  const { textures } = useTextureNonSuspense({
     map: color.baseUrl,
     normalMap: color.normalUrl,
     metalnessMap: color.metalnessUrl,
     roughnessMap: color.roughnessUrl,
-  });
-
-  textures.map.colorSpace = THREE.SRGBColorSpace;
-  textures.map.anisotropy = 16;
-  textures.normalMap.colorSpace = THREE.LinearSRGBColorSpace;
-  textures.roughnessMap.colorSpace = THREE.LinearSRGBColorSpace;
-  textures.metalnessMap.colorSpace = THREE.LinearSRGBColorSpace;
-
-  Object.values(textures).forEach((texture) => {
-    texture.flipY = false;
   });
 
   const sharedMaterial = useMemo(() => {
@@ -147,10 +138,14 @@ export const BaseModel = observer(() => {
   }, []);
 
   useEffect(() => {
+    if (!textures) return;
+
     sharedMaterial.map = textures.map;
     sharedMaterial.normalMap = textures.normalMap;
     sharedMaterial.roughnessMap = textures.roughnessMap;
     sharedMaterial.metalnessMap = textures.metalnessMap;
+
+    if (sharedMaterial.map) sharedMaterial.map.anisotropy = 16;
 
     const id = baseStore.selectedBase.id;
     if (id === "linea" || id === "lineadome" || id === "lineaContour") {
@@ -161,17 +156,14 @@ export const BaseModel = observer(() => {
 
     sharedMaterial.needsUpdate = true;
 
-    // Smooth transition using emissive flash instead of opacity
-    // We kill previous tweens to avoid conflicts
     gsap.killTweensOf(sharedMaterial.emissive);
-
     gsap.fromTo(
       sharedMaterial.emissive,
       { r: 0.5, g: 0.5, b: 0.5 },
       { r: 0, g: 0, b: 0, duration: 0.25, ease: "power2.out" }
     );
 
-  }, [textures, baseStore.selectedBase.id, sharedMaterial, color]); // Added 'color' (selectedBaseColor state) dependency to ensure update
+  }, [textures, baseStore.selectedBase.id, sharedMaterial]);
 
   return (
     <>

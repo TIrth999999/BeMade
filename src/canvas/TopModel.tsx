@@ -5,7 +5,7 @@ import * as THREE from "three";
 import { useEffect, useMemo } from "react";
 import topShapes from "../data/topShapes.json";
 import gsap from "gsap";
-import { useTopTextures } from "../hooks/useTopTextures";
+import { useTextureNonSuspense } from "../hooks/useTextureNonSuspense";
 
 topShapes.forEach(shape => {
   useGLTF.preload(shape.glbUrl);
@@ -77,7 +77,13 @@ export const TopModel = observer(() => {
   } = useStore();
 
   const color = topColorStore.selectedColor;
-  const { textures, loading } = useTopTextures(color);
+
+  const { textures, loading } = useTextureNonSuspense({
+    map: color.baseUrl,
+    normalMap: color.normalUrl,
+    roughnessMap: color.roughnessUrl,
+    metalnessMap: color.metalnessUrl,
+  });
 
   const baseMaterial = useMemo(() => {
     return new THREE.MeshStandardMaterial({
@@ -103,6 +109,7 @@ export const TopModel = observer(() => {
     baseMaterial.normalMap = textures.normalMap;
     baseMaterial.roughnessMap = textures.roughnessMap;
     baseMaterial.metalnessMap = textures.metalnessMap;
+
     baseMaterial.needsUpdate = true;
 
     mdfMaterial.map = textures.map;
@@ -111,14 +118,13 @@ export const TopModel = observer(() => {
     mdfMaterial.metalnessMap = textures.metalnessMap;
     mdfMaterial.needsUpdate = true;
 
-    // Smooth transition using emissive flash
     gsap.killTweensOf(baseMaterial.emissive);
     gsap.fromTo(
       baseMaterial.emissive,
       { r: 0.5, g: 0.5, b: 0.5 },
       { r: 0, g: 0, b: 0, duration: 0.25, ease: "power2.out" }
     );
-  }, [textures, baseMaterial, mdfMaterial, color]); // Added color dependency
+  }, [textures, baseMaterial, mdfMaterial]);
 
   return (
     <>
