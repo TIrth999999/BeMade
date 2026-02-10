@@ -122,9 +122,9 @@ export const TopModel = observer(() => {
     gsap.fromTo(
       baseMaterial.emissive,
       { r: 0.5, g: 0.5, b: 0.5 },
-      { r: 0, g: 0, b: 0, duration: 0.25, ease: "power2.out" }
+      { r: 0, g: 0, b: 0, duration: 0.3, ease: "power2.out" }
     );
-  }, [textures, baseMaterial, mdfMaterial]);
+  }, [textures, baseMaterial, mdfMaterial, topColorStore.selectedColorId]);
 
   return (
     <>

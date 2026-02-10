@@ -1,10 +1,11 @@
 import { observer } from "mobx-react-lite";
 import { useGLTF } from "@react-three/drei";
 import { useStore } from "../context/StoreContext";
-import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import baseShapes from "../data/baseShapes.json";
 import { useTextureNonSuspense } from "../hooks/useTextureNonSuspense";
+import { gsap } from "gsap";
 
 baseShapes.forEach(shape => {
   useGLTF.preload(shape.glbUrl);
@@ -29,11 +30,25 @@ const SingleBaseModel = observer(({ shape, isVisible, sharedMaterial }: { shape:
 
   const gltf = useGLTF(glbUrl) as any;
 
+  const [ready, setReady] = useState(false);
+  const { uiStore } = useStore(); // Get uiStore
+
+  // Force loading state on mount until ready
+  useLayoutEffect(() => {
+    setReady(false);
+    uiStore.setBaseLoading(true);
+    return () => {
+      uiStore.setBaseLoading(false);
+    }
+  }, [shape.id]);
+
   /* 
    * Changed to useLayoutEffect to prevent "flash" of untextured/default model before material is applied.
    * This ensures material assignments happen synchronously before the browser paints the next frame.
    */
   useLayoutEffect(() => {
+    if (!gltf.scene) return;
+
     gltf.scene.traverse((child: any) => {
       if (!child.isMesh) return;
 
@@ -41,6 +56,17 @@ const SingleBaseModel = observer(({ shape, isVisible, sharedMaterial }: { shape:
       child.castShadow = true;
       child.receiveShadow = false;
     });
+
+    // Mark as ready after material application
+    // We use a small timeout to let the browser process the GPU upload frame if needed, 
+    // or just let react commit the update.
+    const t = setTimeout(() => {
+      setReady(true);
+      uiStore.setBaseLoading(false);
+    }, 50); // 50ms buffer to hide any initial frame glitch
+
+    return () => clearTimeout(t);
+
   }, [gltf.scene, sharedMaterial]);
 
 
@@ -119,6 +145,9 @@ const SingleBaseModel = observer(({ shape, isVisible, sharedMaterial }: { shape:
 
   }, [dimensionsStore.length, gltf.scene, isVisible]);
 
+  // Only render if ready to avoid flash
+  if (!ready) return null;
+
   return <primitive object={gltf.scene} visible={isVisible} />;
 });
 
@@ -145,6 +174,7 @@ export const BaseModel = observer(() => {
     baseStore.root.uiStore.setBaseLoading(loading);
   }, [loading, baseStore.root.uiStore]);
 
+  // Material Properties Update
   useLayoutEffect(() => {
     if (!textures) return;
 
@@ -166,19 +196,31 @@ export const BaseModel = observer(() => {
     sharedMaterial.emissive.setHex(0x000000);
 
     sharedMaterial.needsUpdate = true;
-
   }, [textures, baseStore.selectedBase.id, sharedMaterial]);
+
+  // Flash Transition - ONLY on Texture Change (Color Swap)
+  useLayoutEffect(() => {
+    gsap.killTweensOf(sharedMaterial.emissive);
+    gsap.fromTo(
+      sharedMaterial.emissive,
+      { r: 0.5, g: 0.5, b: 0.5 },
+      { r: 0, g: 0, b: 0, duration: 0.25, ease: "power2.inOut" }
+    );
+  }, [textures, sharedMaterial]); // Removed ID dependency here
 
   return (
     <>
-      {baseShapes.map((shape) => (
-        <SingleBaseModel
-          key={shape.id}
-          shape={shape}
-          isVisible={baseStore.selectedBase.id === shape.id}
-          sharedMaterial={sharedMaterial}
-        />
-      ))}
+      {baseShapes.map((shape) => {
+        if (baseStore.selectedBase.id !== shape.id) return null;
+        return (
+          <SingleBaseModel
+            key={shape.id}
+            shape={shape}
+            isVisible={true}
+            sharedMaterial={sharedMaterial}
+          />
+        );
+      })}
     </>
   );
 });
