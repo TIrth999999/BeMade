@@ -4,7 +4,6 @@ import { useStore } from "../context/StoreContext";
 import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import baseShapes from "../data/baseShapes.json";
-import gsap from "gsap";
 import { useTextureNonSuspense } from "../hooks/useTextureNonSuspense";
 
 baseShapes.forEach(shape => {
@@ -30,7 +29,11 @@ const SingleBaseModel = observer(({ shape, isVisible, sharedMaterial }: { shape:
 
   const gltf = useGLTF(glbUrl) as any;
 
-  useEffect(() => {
+  /* 
+   * Changed to useLayoutEffect to prevent "flash" of untextured/default model before material is applied.
+   * This ensures material assignments happen synchronously before the browser paints the next frame.
+   */
+  useLayoutEffect(() => {
     gltf.scene.traverse((child: any) => {
       if (!child.isMesh) return;
 
@@ -123,7 +126,7 @@ export const BaseModel = observer(() => {
   const { baseStore } = useStore();
   const color = baseStore.selectedBaseColor;
 
-  const { textures } = useTextureNonSuspense({
+  const { textures, loading } = useTextureNonSuspense({
     map: color.baseUrl,
     normalMap: color.normalUrl,
     metalnessMap: color.metalnessUrl,
@@ -138,6 +141,11 @@ export const BaseModel = observer(() => {
   }, []);
 
   useEffect(() => {
+    // Sync loading state with UI store
+    baseStore.root.uiStore.setBaseLoading(loading);
+  }, [loading, baseStore.root.uiStore]);
+
+  useLayoutEffect(() => {
     if (!textures) return;
 
     sharedMaterial.map = textures.map;
@@ -154,14 +162,10 @@ export const BaseModel = observer(() => {
       sharedMaterial.color.set('white');
     }
 
-    sharedMaterial.needsUpdate = true;
+    // Ensure no emissive flash
+    sharedMaterial.emissive.setHex(0x000000);
 
-    gsap.killTweensOf(sharedMaterial.emissive);
-    gsap.fromTo(
-      sharedMaterial.emissive,
-      { r: 0.5, g: 0.5, b: 0.5 },
-      { r: 0, g: 0, b: 0, duration: 0.25, ease: "power2.out" }
-    );
+    sharedMaterial.needsUpdate = true;
 
   }, [textures, baseStore.selectedBase.id, sharedMaterial]);
 
