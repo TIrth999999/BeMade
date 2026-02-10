@@ -36,13 +36,12 @@ const SingleBaseModel = observer(({ shape, isVisible, sharedMaterial }: { shape:
   useLayoutEffect(() => {
     setReady(false);
     uiStore.setBaseLoading(true);
-    return () => {
-      uiStore.setBaseLoading(false);
-    }
   }, [shape.id]);
 
   useLayoutEffect(() => {
-    if (!gltf.scene) return;
+    if (!gltf.scene || !sharedMaterial.map) {
+      return;
+    }
 
     gltf.scene.traverse((child: any) => {
       if (!child.isMesh) return;
@@ -52,14 +51,14 @@ const SingleBaseModel = observer(({ shape, isVisible, sharedMaterial }: { shape:
       child.receiveShadow = false;
     });
 
-    const t = setTimeout(() => {
-      setReady(true);
-      uiStore.setBaseLoading(false);
-    }, 50);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setReady(true);
+        uiStore.setBaseLoading(false);
+      });
+    });
 
-    return () => clearTimeout(t);
-
-  }, [gltf.scene, sharedMaterial]);
+  }, [gltf.scene, sharedMaterial, sharedMaterial.map]);
 
 
   const originalPositions = useRef<{ left: number; right: number } | null>(null);

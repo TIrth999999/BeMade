@@ -68,5 +68,5 @@ export type Chair = {
 export type CameraPosition = {
   name: string;
   position: [number, number, number];
-  fov : number;
+  fov: number;
 }

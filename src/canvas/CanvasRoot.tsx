@@ -31,7 +31,6 @@ export const ScreenshotHandler = observer(() => {
   return null;
 });
 
-
 const BaseLoadingHandler = observer(() => {
   const { uiStore } = useStore();
   useEffect(() => {
@@ -106,15 +105,14 @@ export const CanvasRoot = observer(() => {
         shadow-normalBias={0.02}
       />
 
-
       <directionalLight
-        position={[3, 0.1, 0]}
+        position={[3, 0, 3]}
         intensity={4}
       />
 
       <directionalLight
-        position={[-3, 0.1, 0]}
-        intensity={3}
+        position={[-3, 0, -3]}
+        intensity={4}
       />
 
       <ambientLight intensity={0.7} />
