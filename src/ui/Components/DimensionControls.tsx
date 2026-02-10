@@ -82,6 +82,8 @@ export const DimensionControls = observer(() => {
     widthMax = 1300;
   }
 
+
+
   useEffect(() => {
     const currentLength = dimensionsStore.length;
     const currentWidth = dimensionsStore.width;

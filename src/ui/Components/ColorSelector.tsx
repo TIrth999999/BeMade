@@ -8,7 +8,7 @@ export const ColorSelector = observer(() => {
     <div className="panel-section">
       <h3 className="panel-title">Choose Base Color</h3>
 
-      <div className="color-grid">
+      <div className="color-grid-base">
         {baseStore.availableColors.map(c => (
           <div key={c.id}>
             <div
