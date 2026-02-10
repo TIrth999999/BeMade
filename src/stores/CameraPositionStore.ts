@@ -1,5 +1,4 @@
 import { makeAutoObservable } from "mobx"
-import { runInAction } from "mobx";
 import { RootStore } from "./RootStore";
 import type { CameraPosition } from "../types";
 
