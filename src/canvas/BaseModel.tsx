@@ -14,7 +14,7 @@ baseShapes.forEach(shape => {
   }
 });
 
-const SingleBaseModel = observer(({ shape, isVisible, sharedMaterial }: { shape: any, isVisible: boolean, sharedMaterial: THREE.MeshStandardMaterial }) => {
+const SingleBaseModel = observer(({ shape, isVisible, sharedMaterial, texturesReady }: { shape: any, isVisible: boolean, sharedMaterial: THREE.MeshStandardMaterial, texturesReady: boolean }) => {
   const { dimensionsStore } = useStore();
 
   const glbUrl = useMemo(() => {
@@ -36,10 +36,14 @@ const SingleBaseModel = observer(({ shape, isVisible, sharedMaterial }: { shape:
   useLayoutEffect(() => {
     setReady(false);
     uiStore.setBaseLoading(true);
+    return () => {
+      uiStore.setBaseLoading(false);
+    }
   }, [shape.id]);
 
   useLayoutEffect(() => {
-    if (!gltf.scene || !sharedMaterial.map) {
+    if (!gltf.scene || !texturesReady) {
+      setReady(false);
       return;
     }
 
@@ -52,13 +56,11 @@ const SingleBaseModel = observer(({ shape, isVisible, sharedMaterial }: { shape:
     });
 
     requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        setReady(true);
-        uiStore.setBaseLoading(false);
-      });
+      setReady(true);
+      uiStore.setBaseLoading(false);
     });
 
-  }, [gltf.scene, sharedMaterial, sharedMaterial.map]);
+  }, [gltf.scene, sharedMaterial, texturesReady]);
 
 
   const originalPositions = useRef<{ left: number; right: number } | null>(null);
@@ -204,6 +206,7 @@ export const BaseModel = observer(() => {
             shape={shape}
             isVisible={true}
             sharedMaterial={sharedMaterial}
+            texturesReady={!!textures}
           />
         );
       })}
