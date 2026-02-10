@@ -14,7 +14,7 @@ baseShapes.forEach(shape => {
   }
 });
 
-const SingleBaseModel = observer(({ shape, isVisible, sharedMaterial }: { shape: any, isVisible: boolean, sharedMaterial: THREE.MeshStandardMaterial }) => {
+const SingleBaseModel = ({ shape, isVisible, sharedMaterial }: { shape: any, isVisible: boolean, sharedMaterial: THREE.MeshStandardMaterial }) => {
   const { dimensionsStore } = useStore();
 
   const glbUrl = useMemo(() => {
@@ -149,7 +149,7 @@ const SingleBaseModel = observer(({ shape, isVisible, sharedMaterial }: { shape:
   if (!ready) return null;
 
   return <primitive object={gltf.scene} visible={isVisible} />;
-});
+};
 
 export const BaseModel = observer(() => {
   const { baseStore } = useStore();

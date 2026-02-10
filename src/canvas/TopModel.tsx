@@ -12,7 +12,7 @@ topShapes.forEach(shape => {
   useGLTF.preload(shape.mdfUrl);
 });
 
-const SingleTopModel = observer(({ shape, isVisible, baseMaterial, mdfMaterial }: { shape: any, isVisible: boolean, baseMaterial: THREE.MeshStandardMaterial, mdfMaterial: THREE.MeshStandardMaterial }) => {
+const SingleTopModel = ({ shape, isVisible, baseMaterial, mdfMaterial }: { shape: any, isVisible: boolean, baseMaterial: THREE.MeshStandardMaterial, mdfMaterial: THREE.MeshStandardMaterial }) => {
   const { dimensionsStore } = useStore();
 
   const gltf = useGLTF(shape.glbUrl) as any;
@@ -67,7 +67,7 @@ const SingleTopModel = observer(({ shape, isVisible, baseMaterial, mdfMaterial }
       <primitive object={gltf2.scene} scale={scale} />
     </group>
   );
-});
+};
 
 export const TopModel = observer(() => {
   const {
