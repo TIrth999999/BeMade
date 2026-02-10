@@ -10,22 +10,27 @@ import { observer } from "mobx-react-lite";
 import { useStore } from "../context/StoreContext";
 
 export const ScreenshotHandler = observer(() => {
-  const { gl, scene, camera } = useThree();
+  const { gl, scene, camera, invalidate } = useThree();
   const { uiStore } = useStore();
 
   useEffect(() => {
     if (!uiStore.takeScreenshot) return;
 
-    gl.render(scene, camera);
+    invalidate();
 
-    const dataURL = gl.domElement.toDataURL("image/png");
+    requestAnimationFrame(() => {
+      gl.render(scene, camera); 
+      const dataURL = gl.domElement.toDataURL("image/png");
 
-    uiStore.setScreenshot(dataURL);
-    uiStore.resetScreenshotTrigger();
+      uiStore.setScreenshot(dataURL);
+      uiStore.resetScreenshotTrigger();
+    });
+
   }, [uiStore.takeScreenshot]);
 
   return null;
 });
+
 
 const BaseLoadingHandler = observer(() => {
   const { uiStore } = useStore();

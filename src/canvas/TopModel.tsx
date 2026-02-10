@@ -65,7 +65,7 @@ export const TopModel = observer(() => {
     gsap.fromTo(
       baseMaterial,
       { opacity: 0 },
-      { opacity: 1, duration: 0.25, ease: "sine.inOut" }
+      { opacity: 1, duration: 0, ease: "sine.inOut" }
     );
   }, [textures, baseMaterial, mdfMaterial]);
 

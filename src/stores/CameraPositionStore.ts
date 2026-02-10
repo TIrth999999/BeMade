@@ -1,4 +1,5 @@
 import { makeAutoObservable } from "mobx"
+import { runInAction } from "mobx";
 import { RootStore } from "./RootStore";
 import type { CameraPosition } from "../types";
 
@@ -45,6 +46,7 @@ export class CameraPositionStore {
     root: RootStore;
     cameraPositions: CameraPosition[] = data as CameraPosition[];
     selectedCameraPositionName: string = "frontView";
+    isScreenshotFlow = false;
 
     constructor(root: RootStore) {
         this.root = root;
@@ -54,6 +56,23 @@ export class CameraPositionStore {
 
     setCameraPosition(name: string) {
         this.selectedCameraPositionName = name;
+    }
+
+    startScreenshotView(name: string) {
+        this.isScreenshotFlow = true;
+        if (this.selectedCameraPositionName === name) {
+            // Already at chairView, trigger screenshot immediately
+            if (this.root.uiStore) {
+                this.root.uiStore.requestScreenshot();
+                this.endScreenshotFlow();
+            }
+        } else {
+            this.selectedCameraPositionName = name;
+        }
+    }
+
+    endScreenshotFlow() {
+        this.isScreenshotFlow = false;
     }
 
     get selectedCameraPosition() {

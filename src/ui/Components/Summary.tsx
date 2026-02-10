@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 
 export const Summary = observer(() => {
-    const { topShapeStore, baseStore, chairStore, dimensionsStore, topColorStore, uiStore } = useStore();
+    const { topShapeStore, baseStore, chairStore, dimensionsStore, topColorStore, uiStore, cameraPositionStore } = useStore();
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -164,13 +164,12 @@ export const Summary = observer(() => {
                     <button
                         className="place-order-btn"
                         onClick={() => {
-
-                            uiStore.requestScreenshot()
-
+                            cameraPositionStore.startScreenshotView("chairView");
                         }}
                     >
                         PLACE ORDER
                     </button>
+
                 </>
             )}
         </div>

@@ -7,29 +7,42 @@ import { observer } from "mobx-react-lite";
 import { gsap } from "gsap";
 
 export const CameraSetup = observer(() => {
+  const { camera } = useThree();
+  const controlsRef = useRef<any>(null);
+  const tweenRef = useRef<gsap.core.Tween | null>(null);
 
-    const { camera } = useThree();
-    const controlsRef = useRef<any>(null);
-    const { cameraPositionStore } = useStore();
+  const { cameraPositionStore, uiStore } = useStore();
 
-    useEffect(() => {
-        const target = new THREE.Vector3(0, 0.5, 0);
+  useEffect(() => {
+  const target = new THREE.Vector3(0, 0.5, 0);
+  const pos = cameraPositionStore.selectedCameraPosition.position;
 
-        gsap.to(camera.position, {
-            x: cameraPositionStore.selectedCameraPosition.position[0],
-            y: cameraPositionStore.selectedCameraPosition.position[1],
-            z: cameraPositionStore.selectedCameraPosition.position[2],
-            duration: 1.2,
-            ease: "power2.inOut",
-            onUpdate: () => { camera.lookAt(target); }
+  tweenRef.current?.kill();
+
+  tweenRef.current = gsap.to(camera.position, {
+    x: pos[0],
+    y: pos[1],
+    z: pos[2],
+    duration: 1.2,
+    ease: "power2.inOut",
+    onUpdate: () => {
+      camera.lookAt(target);
+      controlsRef.current?.target.copy(target);
+      controlsRef.current?.update();
+    },
+    onComplete: () => {
+
+      if (cameraPositionStore.isScreenshotFlow) {
+
+        requestAnimationFrame(() => {
+          uiStore.requestScreenshot();
+          cameraPositionStore.endScreenshotFlow();
         });
+      }
+    }
+  });
+}, [cameraPositionStore.selectedCameraPositionName]);
 
-        // camera.position.set(cameraPositionStore.selectedCameraPosition.position[0], cameraPositionStore.selectedCameraPosition.position[1], cameraPositionStore.selectedCameraPosition.position[2]);
-        camera.lookAt(target);
 
-        controlsRef.current?.target.copy(target);
-        controlsRef.current?.update();
-    }, [camera, cameraPositionStore.selectedCameraPositionName]);
-
-    return <OrbitControls ref={controlsRef} makeDefault enabled={false} />;
+  return <OrbitControls ref={controlsRef} makeDefault enabled={false} />;
 });
