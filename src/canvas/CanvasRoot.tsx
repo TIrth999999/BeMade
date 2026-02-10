@@ -27,7 +27,6 @@ export const ScreenshotHandler = observer(() => {
   return null;
 });
 
-
 const BaseLoadingHandler = observer(() => {
   const { uiStore } = useStore();
   useEffect(() => {
@@ -36,7 +35,6 @@ const BaseLoadingHandler = observer(() => {
   }, [uiStore]);
   return null;
 });
-
 const TopLoadingHandler = observer(() => {
   const { uiStore } = useStore();
   useEffect(() => {
@@ -53,23 +51,43 @@ const ChairLoadingHandler = observer(() => {
   }, [uiStore]);
   return null;
 });
+
+
 export const CanvasRoot = observer(() => {
 
-  const { cameraPositionStore } = useStore();
+  const { cameraPositionStore, baseStore, chairStore, topShapeStore, topColorStore, uiStore, dimensionsStore } = useStore();
+
+  const isSceneReady =
+    !uiStore.baseLoading &&
+    !uiStore.topLoading &&
+    !uiStore.chairLoading;
+
+  const shadowKey = [
+    baseStore.selectedBase.id,
+    chairStore.count,
+    chairStore.selectedChair.id,
+    topShapeStore.selectedTopShape.id,
+    topColorStore.selectedTopColor.id,
+    cameraPositionStore.selectedCameraPositionName,
+    dimensionsStore.length,
+    dimensionsStore.width,
+  ].join("-");
+
 
   return (
     <Canvas shadows dpr={[1, 2]} camera={{ fov: cameraPositionStore.selectedCameraPosition.fov }}
       gl={{
+        antialias: true,
         preserveDrawingBuffer: true,
         outputColorSpace: THREE.SRGBColorSpace,
         toneMapping: THREE.ACESFilmicToneMapping,
-        toneMappingExposure: 1
+        toneMappingExposure: 1.02
       }}>
       <CameraSetup />
 
       <directionalLight
-        position={[6, 4, 2]}
-        intensity={1.6}
+        position={[-6, 7, 2]}
+        intensity={1.9}
         castShadow
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
@@ -81,29 +99,24 @@ export const CanvasRoot = observer(() => {
         shadow-normalBias={0.02}
       />
 
-      <directionalLight
-        position={[0, 1, 6]}
-        intensity={0.9}
-      />
 
-      <pointLight
-        position={[0, 6, 0]}
-        intensity={8.5}
+      <directionalLight
+        position={[3, 0.1, 0]}
+        intensity={4}
       />
 
       <directionalLight
-        position={[0, 2, -6]}
-        intensity={0.35}
-        color={"#e7f0ff"}
+        position={[-3, 0.1, 0]}
+        intensity={3}
       />
-      <ambientLight intensity={0.1} />
+
+      <ambientLight intensity={0.7} />
 
       {cameraPositionStore.selectedCameraPositionName !== "twoChairView" && (
         <Suspense fallback={<BaseLoadingHandler />}>
           <BaseModel />
         </Suspense>
       )}
-
 
       {cameraPositionStore.selectedCameraPositionName !== "twoChairView" && (
         <Suspense fallback={<TopLoadingHandler />}>
@@ -117,29 +130,17 @@ export const CanvasRoot = observer(() => {
         />
       </Suspense>
 
-      <ContactShadows
-        position={[0, 0, 0]}
-        scale={10}
-        blur={0.5}
-        far={1}
-        opacity={0.5}
-      />
-
-      {/* <Environment
-        preset='studio'
-        blur={0.25}
-        environmentIntensity={0.2}
-      /> */}
-
-      <directionalLight
-        position={[3, 0.2, 2]}
-        intensity={1.9}
-      />
-
-      <directionalLight
-        position={[-3, 0.2, 2]}
-        intensity={1.9}
-      />
+      {isSceneReady && (
+        <ContactShadows
+          key={shadowKey}
+          position={[0, 0, 0]}
+          scale={10}
+          blur={0.35}
+          far={1}
+          opacity={0.7}
+          frames={1}
+        />
+      )}
 
       <ScreenshotHandler />
 

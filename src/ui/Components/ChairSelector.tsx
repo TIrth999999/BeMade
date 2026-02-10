@@ -60,14 +60,14 @@ export const ChairSelector = observer(() => {
             if (length === width) {
                 const entry = squareTable.find(e => e.size === length);
                 if (!entry) return null;
-                if (chairStore.count === entry.comfort) return "Comfortable Seating";
-                if (chairStore.count === entry.tight) return "Compact Seating";
+                if (chairStore.count <= entry.comfort) return "Comfortable Seating";
+                if (chairStore.count >= entry.tight) return "Compact Seating";
             }
             // Round
             const entry = roundTable.find(e => e.diameter === length);
             if (!entry) return null;
-            if (chairStore.count === entry.comfort) return "Comfortable Seating";
-            if (chairStore.count === entry.tight) return "Compact Seating";
+            if (chairStore.count <= entry.comfort) return "Comfortable Seating";
+            if (chairStore.count >= entry.tight) return "Compact Seating";
         } else {
             // Rectangle
             const entry = rectangleTable.find(e => e.length === length);

@@ -39,7 +39,7 @@ export const BaseModel = observer(() => {
     map: color.baseUrl,
     normalMap: color.normalUrl,
     metalnessMap: color.metalnessUrl,
-    roughnessMap: color.roughnessUrl
+    roughnessMap: color.roughnessUrl,
   });
   textures.map.colorSpace = THREE.SRGBColorSpace;
   textures.map.anisotropy = 16;
@@ -63,12 +63,18 @@ export const BaseModel = observer(() => {
         child.material = new THREE.MeshStandardMaterial();
       }
 
-      child.material.map = textures.map;
+      if(baseStore.selectedBase.id === "linea" || baseStore.selectedBase.id === "lineadome" || baseStore.selectedBase.id === "lineaContour"){
+        child.material.color = new THREE.Color('#f5e8d0');
+      }
+
+      // child.material.color = new THREE.Color('#f5e8d0'),
+
+        child.material.map = textures.map;
       child.material.normalMap = textures.normalMap;
       child.material.roughnessMap = textures.roughnessMap;
       child.material.metalnessMap = textures.metalnessMap;
-      child.material.metalness = 0.65;
-      child.material.roughness = 0.7;
+      child.material.metalness = 0.45;
+      child.material.roughness = 0.65;
 
       child.material.needsUpdate = true;
       child.castShadow = true;
