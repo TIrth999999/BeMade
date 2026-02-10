@@ -5,7 +5,6 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import baseShapes from "../data/baseShapes.json";
 import { useTextureNonSuspense } from "../hooks/useTextureNonSuspense";
-import { gsap } from "gsap";
 
 baseShapes.forEach(shape => {
   useGLTF.preload(shape.glbUrl);
@@ -187,14 +186,7 @@ export const BaseModel = observer(() => {
     sharedMaterial.needsUpdate = true;
   }, [textures, baseStore.selectedBase.id, sharedMaterial]);
 
-  useLayoutEffect(() => {
-    gsap.killTweensOf(sharedMaterial.emissive);
-    gsap.fromTo(
-      sharedMaterial.emissive,
-      { r: 0.5, g: 0.5, b: 0.5 },
-      { r: 0, g: 0, b: 0, duration: 0.25, ease: "power2.inOut" }
-    );
-  }, [textures, sharedMaterial]);
+
 
   return (
     <>

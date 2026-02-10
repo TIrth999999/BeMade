@@ -18,19 +18,25 @@ export const ChairModel = observer(
     const gltf = useGLTF(shape.glbUrl);
 
 
-    const { textures: texturesLeg } = useTextureNonSuspense({
+    const { textures: texturesLeg, loading: loadingLeg } = useTextureNonSuspense({
       map: color.chairLegColor,
       normalMap: color.chairLegNormal,
       metalnessMap: color.chairLegMetalness,
       roughnessMap: color.chairLegRoughness
     });
 
-    const { textures: texturesTop } = useTextureNonSuspense({
+    const { textures: texturesTop, loading: loadingTop } = useTextureNonSuspense({
       map: color.chairTopColor,
       normalMap: color.chairTopNormal,
       metalnessMap: color.chairTopMetalness,
       roughnessMap: color.chairTopRoughness
     });
+
+    const { uiStore } = useStore();
+
+    useEffect(() => {
+      uiStore.setChairLoading(loadingLeg || loadingTop);
+    }, [loadingLeg, loadingTop, uiStore]);
 
     const materials = useMemo(() => {
       return {
