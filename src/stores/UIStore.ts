@@ -13,10 +13,16 @@ export class UIStore {
 
     isFullscreen: boolean = false;
     isShareModalOpen: boolean = false;
+    isLoggedIn: boolean = localStorage.getItem("isLoggedIn") === "true";
 
     constructor(rootStore: RootStore) {
         this.rootStore = rootStore;
         makeAutoObservable(this);
+    }
+
+    setLoggedIn(val: boolean) {
+        this.isLoggedIn = val;
+        localStorage.setItem("isLoggedIn", val.toString());
     }
 
     setTopLoading(val: boolean) {

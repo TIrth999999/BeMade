@@ -1,14 +1,19 @@
 import "../../App.css";
 import { useState } from "react";
 import { SampleModal } from "../Modals/SampleModal";
+import { observer } from "mobx-react-lite";
+import { useStore } from "../../context/StoreContext";
+import { useNavigate } from "react-router-dom";
 
 type NavbarProps = {
   activeStep: string;
   setActiveStep: React.Dispatch<React.SetStateAction<string>>;
 };
 
-export function Navbar({ activeStep, setActiveStep }: NavbarProps) {
+export const Navbar = observer(({ activeStep, setActiveStep }: NavbarProps) => {
   const [isSampleModalOpen, setIsSampleModalOpen] = useState(false);
+  const { uiStore } = useStore();
+  const navigate = useNavigate();
 
   const handleStepClick = (id: string) => {
     setActiveStep(id);
@@ -19,6 +24,14 @@ export function Navbar({ activeStep, setActiveStep }: NavbarProps) {
         behavior: "smooth",
         block: "start",
       });
+    }
+  };
+
+  const handleOrderSample = () => {
+    if (!uiStore.isLoggedIn) {
+      navigate("/login");
+    } else {
+      setIsSampleModalOpen(true);
     }
   };
 
@@ -75,12 +88,29 @@ export function Navbar({ activeStep, setActiveStep }: NavbarProps) {
           </span>
         </div>
 
-        <button
-          className="navbar-btn"
-          onClick={() => setIsSampleModalOpen(true)}
-        >
-          Order Sample
-        </button>
+        <div className="navbar-right">
+          {!uiStore.isLoggedIn ? (
+            <span
+              className="navbar-login-link"
+              onClick={() => navigate("/login")}
+            >
+              Login / Register
+            </span>
+          ) : (
+            <span
+              className="navbar-login-link"
+              onClick={() => uiStore.setLoggedIn(false)}
+            >
+              Logout
+            </span>
+          )}
+          <button
+            className="navbar-btn"
+            onClick={handleOrderSample}
+          >
+            Order Sample
+          </button>
+        </div>
       </nav>
 
       <SampleModal
@@ -89,4 +119,4 @@ export function Navbar({ activeStep, setActiveStep }: NavbarProps) {
       />
     </>
   );
-}
+});

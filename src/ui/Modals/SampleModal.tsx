@@ -2,6 +2,8 @@ import React, { useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import topColorsData from "../../data/topColors.json";
 import type { TopColor } from "../../types";
+import { observer } from "mobx-react-lite";
+import { useStore } from "../../context/StoreContext";
 
 interface SampleModalProps {
     isOpen: boolean;
@@ -97,9 +99,10 @@ const SampleItem = React.memo(({
 
 SampleItem.displayName = 'SampleItem';
 
-export const SampleModal = ({ isOpen, onClose }: SampleModalProps) => {
+export const SampleModal = observer(({ isOpen, onClose }: SampleModalProps) => {
     const [selectedSamples, setSelectedSamples] = useState<Set<string>>(new Set());
     const navigate = useNavigate();
+    const { uiStore } = useStore();
 
     const topColors = useMemo(() => topColorsData as TopColor[], []);
 
@@ -134,6 +137,12 @@ export const SampleModal = ({ isOpen, onClose }: SampleModalProps) => {
     }, []);
 
     const handleBuyNow = useCallback(() => {
+        if (!uiStore.isLoggedIn) {
+            navigate("/login");
+            onClose();
+            return;
+        }
+
         const selectedColors = topColors.filter(color => selectedSamples.has(color.id));
         const totalPrice = calculatePrice(selectedSamples.size);
         navigate('/checkout', {
@@ -145,7 +154,7 @@ export const SampleModal = ({ isOpen, onClose }: SampleModalProps) => {
         });
 
         onClose();
-    }, [selectedSamples, topColors, calculatePrice, navigate, onClose]);
+    }, [selectedSamples, topColors, calculatePrice, navigate, onClose, uiStore.isLoggedIn]);
 
     if (!isOpen) return null;
 
@@ -199,5 +208,5 @@ export const SampleModal = ({ isOpen, onClose }: SampleModalProps) => {
             </div>
         </div>
     );
-};
+});
 

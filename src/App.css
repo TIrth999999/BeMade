@@ -99,6 +99,24 @@ body {
     transform: scale(0.95);
 }
 
+.navbar-right {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+}
+
+.navbar-login-link {
+    font-size: 17px;
+    font-weight: 400;
+    color: #000;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.navbar-login-link:hover {
+    opacity: 0.7;
+}
+
 /* ===== MAIN APP LAYOUT ===== */
 .app {
     display: flex;
@@ -2026,4 +2044,144 @@ body {
     .carousel-dots {
         display: none !important;
     }
+}
+
+/* ===== AUTH PAGES ===== */
+.auth-page {
+    min-height: 100vh;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+}
+
+.auth-header {
+    height: 73px;
+    padding: 0 48px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.auth-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 440px;
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f0f0f0;
+    position: relative;
+}
+
+.auth-back {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}
+
+.auth-back a {
+    color: #444;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.auth-title {
+    font-size: 28px;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 32px;
+    color: #000;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.auth-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.auth-group label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #666;
+}
+
+.auth-group label.required::after {
+    content: ' *';
+    color: #e74c3c;
+}
+
+.auth-group input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    background: #fff;
+}
+
+.auth-group input:focus {
+    outline: none;
+    border-color: #000;
+}
+
+.password-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 12px;
+    color: #999;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.auth-btn {
+    width: 100%;
+    background: #000;
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 40px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 10px;
+}
+
+.auth-btn:hover {
+    background: #222;
+}
+
+.auth-footer {
+    margin-top: 24px;
+    text-align: center;
+    font-size: 14px;
+    color: #666;
+}
+
+.auth-footer a {
+    color: #000;
+    font-weight: 600;
+    text-decoration: none;
 }

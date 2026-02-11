@@ -10,6 +10,8 @@ import { lazy, Suspense } from "react";
 
 const DesignPage = lazy(() => import("./ui/DesignPage").then(module => ({ default: module.DesignPage })));
 const Checkout = lazy(() => import("./ui/Components/Checkout").then(module => ({ default: module.Checkout })));
+const Login = lazy(() => import("./ui/Login").then(module => ({ default: module.Login })));
+const Register = lazy(() => import("./ui/Register").then(module => ({ default: module.Register })));
 
 const assets = getAssetsToPreload();
 
@@ -28,6 +30,8 @@ export default observer(function App() {
           <Routes>
             <Route path="/" element={<DesignPage />} />
             <Route path="/checkout" element={<Checkout />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
           </Routes>
         </Suspense>
       </Router>

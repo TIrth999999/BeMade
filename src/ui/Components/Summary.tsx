@@ -164,7 +164,11 @@ export const Summary = observer(() => {
                     <button
                         className="place-order-btn"
                         onClick={() => {
-                            cameraPositionStore.startScreenshotView("chairView");
+                            if (!uiStore.isLoggedIn) {
+                                navigate("/login");
+                            } else {
+                                cameraPositionStore.startScreenshotView("chairView");
+                            }
                         }}
                     >
                         PLACE ORDER
