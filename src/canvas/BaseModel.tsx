@@ -183,7 +183,7 @@ export const BaseModel = observer(() => {
     if (id === "linea" || id === "lineadome" || id === "lineaContour") {
       sharedMaterial.color.set('#f5e8d0');
     } else {
-      sharedMaterial.color.set('white');
+      // sharedMaterial.color.set('white');
     }
 
     // sharedMaterial.emissive.setHex(0x000000);
