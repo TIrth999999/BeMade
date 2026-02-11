@@ -32,16 +32,9 @@ const SingleBaseModel = observer(({ shape, isVisible, sharedMaterial, texturesRe
   const [ready, setReady] = useState(false);
   const { uiStore } = useStore();
 
-  // Track if mesh is loaded but textures are not yet ready
+  // Always show loader until both mesh and textures are ready
   useLayoutEffect(() => {
-    setReady(false);
-    // Always show loader on shape change
-    uiStore.setBaseLoading(true);
-    // No cleanup so we don't accidentally turn off loading if another component is still loading
-  }, [shape.id]);
-
-  useLayoutEffect(() => {
-    if (!gltf.scene) {
+    if (!gltf.scene || !texturesReady) {
       setReady(false);
       uiStore.setBaseLoading(true);
       return;
@@ -54,19 +47,10 @@ const SingleBaseModel = observer(({ shape, isVisible, sharedMaterial, texturesRe
       child.receiveShadow = false;
     });
 
-    // If mesh is loaded but textures are not ready, show loader
-    if (!texturesReady) {
-      setReady(false);
-      uiStore.setBaseLoading(true);
-      return;
-    }
-
-    // Both mesh and textures are ready, hide loader
     requestAnimationFrame(() => {
       setReady(true);
       uiStore.setBaseLoading(false);
     });
-
   }, [gltf.scene, sharedMaterial, texturesReady, uiStore]);
 
 
