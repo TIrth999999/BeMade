@@ -104,7 +104,7 @@ body {
 .navbar-right {
     display: flex;
     align-items: center;
-    gap: 32px;
+    gap: 10px;
 }
 
 .navbar-login-link {
@@ -126,7 +126,7 @@ body {
     /* 73px Navbar + 73px Footer */
     width: 100%;
     overflow: hidden;
-    padding: 12px;
+    padding: 25px;
     gap: 12px;
 }
 
@@ -215,7 +215,7 @@ body {
 
 /* Panel Sections */
 .panel-section {
-    padding: 20px 20px;
+    padding: 0px 10px;
     /* Increased padding */
 }
 
@@ -224,6 +224,7 @@ body {
     /* Larger title */
     font-weight: 600;
     color: #000;
+    margin-top: 20px;
     margin-bottom: 30px;
 }
 
@@ -246,7 +247,7 @@ body {
 .card {
     width: 100%;
     aspect-ratio: 1.1;
-    border-radius: 20px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -268,8 +269,8 @@ body {
 .card.active::before {
     content: '';
     position: absolute;
-    top: 6px;
-    right: 6px;
+    top: 4px;
+    right: 4px;
     width: 42px;
     height: 42px;
     background-image: url('/assets/selection-icon.svg');
@@ -390,7 +391,7 @@ body {
     border: 1px solid #787878;
     display: inline-block;
     padding: 4px 10px;
-    margin-top: 10px;
+    margin-top: 20px;
     margin-bottom: 10px;
     border-radius: 5px;
 }
@@ -1950,14 +1951,16 @@ body {
         /* Remove flex: 1 to allow tight spacing */
         margin: 0;
         line-height: 1.2;
+        margin-left: 20px;
     }
 
     .navbar-btn {
         margin-right: -10px;
         padding: 8px 12px;
-        font-size: 13px;
+        font-size: 12px;
         white-space: nowrap;
         border-radius: 40px;
+        /* margin-left: 20px; */
     }
 
     .navbar-right {

@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite";
 import { useStore } from "../../context/StoreContext";
 
 export const TopColorSelector = observer(() => {
-  const { topColorStore,cameraPositionStore } = useStore();
+  const { topColorStore, cameraPositionStore } = useStore();
 
   const groups = topColorStore.colors.reduce((acc: any, color) => {
     const className = color.className || "Other";
@@ -13,7 +13,7 @@ export const TopColorSelector = observer(() => {
 
   return (
     <div className="panel-section">
-      <h3 className="panel-title">Choose Table Top</h3>
+      <h3 className="panel-title" style={{ marginBottom: "-10px" }}>Choose Table Top</h3>
 
       {Object.entries(groups).map(([className, colors]: [string, any]) => (
         <div key={className} className="color-group">
@@ -24,7 +24,7 @@ export const TopColorSelector = observer(() => {
                 <div
                   className={`color-swatch ${topColorStore.selectedColorId === c.id ? "active" : ""
                     }`}
-                  onClick={() => {topColorStore.setColor(c.id); cameraPositionStore.setCameraPosition("topView") }} >
+                  onClick={() => { topColorStore.setColor(c.id); cameraPositionStore.setCameraPosition("topView") }} >
                   <img src={c.previewUrl} alt={c.name} /> </div>
                 <span className="color-name">{c.name}</span>
               </div>

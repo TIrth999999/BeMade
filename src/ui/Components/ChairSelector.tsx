@@ -163,7 +163,7 @@ export const ChairSelector = observer(() => {
                                 width: '48px',
                                 height: '36px',
                                 border: 'none',
-                                background: chairStore.count <= 0 ? '#e5e7eb' : '#9ca3af',
+                                background: chairStore.count <= 0 ? '#e5e7eb' : 'black',
                                 color: 'white',
                                 fontSize: '20px',
                                 cursor: chairStore.count <= 0 ? 'not-allowed' : 'pointer',
