@@ -186,7 +186,7 @@ export const BaseModel = observer(() => {
       sharedMaterial.color.set('white');
     }
 
-    sharedMaterial.emissive.setHex(0x000000);
+    // sharedMaterial.emissive.setHex(0x000000);
 
     sharedMaterial.needsUpdate = true;
   }, [textures, baseStore.selectedBase.id, sharedMaterial]);
