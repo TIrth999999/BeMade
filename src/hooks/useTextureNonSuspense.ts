@@ -42,6 +42,7 @@ export const useTextureNonSuspense = (urls: TextureMap) => {
             return;
         }
 
+        setTextures(null);
         setLoading(true);
 
         const loader = new THREE.TextureLoader();

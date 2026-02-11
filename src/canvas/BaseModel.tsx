@@ -35,9 +35,7 @@ const SingleBaseModel = observer(({ shape, isVisible, sharedMaterial, texturesRe
   useLayoutEffect(() => {
     setReady(false);
     uiStore.setBaseLoading(true);
-    return () => {
-      uiStore.setBaseLoading(false);
-    }
+    // No cleanup so we don't accidentally turn off loading if another component is still loading
   }, [shape.id]);
 
   useLayoutEffect(() => {
@@ -158,14 +156,21 @@ export const BaseModel = observer(() => {
     mat.roughness = 0.65;
     mat.metalness = 0.45;
     return mat;
-  }, []);
+  }, [baseStore.selectedBase.id]);
 
   useEffect(() => {
     baseStore.root.uiStore.setBaseLoading(loading);
   }, [loading, baseStore.root.uiStore]);
 
   useLayoutEffect(() => {
-    if (!textures) return;
+    if (!textures) {
+      sharedMaterial.map = null;
+      sharedMaterial.normalMap = null;
+      sharedMaterial.roughnessMap = null;
+      sharedMaterial.metalnessMap = null;
+      sharedMaterial.needsUpdate = true;
+      return;
+    }
 
     sharedMaterial.map = textures.map;
     sharedMaterial.normalMap = textures.normalMap;
