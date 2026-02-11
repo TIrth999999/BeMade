@@ -177,13 +177,14 @@ export const BaseModel = observer(() => {
     if (sharedMaterial.map) sharedMaterial.map.anisotropy = 16;
 
     const id = baseStore.selectedBase.id;
-    if (id === "linea" || id === "lineadome" || id === "lineaContour") {
-      sharedMaterial.color.set('#f5e8d0');
-    } else {
-      // sharedMaterial.color.set('white');
+
+    if (id === 'linea' || id === 'lineaContour') {
+      sharedMaterial.side = THREE.DoubleSide;
     }
 
-    // sharedMaterial.emissive.setHex(0x000000);
+    if (id === "linea" || id === "lineadome" || id === "lineaContour") {
+      sharedMaterial.color.set('#f5e8d0');
+    }
 
     sharedMaterial.needsUpdate = true;
   }, [textures, baseStore.selectedBase.id, sharedMaterial]);
