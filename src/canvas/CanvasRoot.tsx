@@ -60,6 +60,13 @@ const ChairLoadingHandler = observer(() => {
 export const CanvasRoot = observer(() => {
   const { cameraPositionStore, uiStore, baseStore, chairStore, topShapeStore, dimensionsStore } = useStore();
   const [dpr, setDpr] = useState(1.5);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 1024);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const isSceneReady =
     !uiStore.baseLoading &&
@@ -74,11 +81,14 @@ export const CanvasRoot = observer(() => {
     dimensionsStore.width,
   ].join("-");
 
+  const baseFov = cameraPositionStore.selectedCameraPosition.fov;
+  const fov = isMobile ? baseFov + 15 : baseFov;
+
   return (
     <Canvas
       shadows
       dpr={dpr}
-      camera={{ fov: cameraPositionStore.selectedCameraPosition.fov }}
+      camera={{ fov }}
       gl={{
         antialias: true,
         preserveDrawingBuffer: true,
