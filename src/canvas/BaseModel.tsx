@@ -13,7 +13,7 @@ baseShapes.forEach(shape => {
   }
 });
 
-const SingleBaseModel = observer(({ shape, isVisible, sharedMaterial, texturesReady }: { shape: any, isVisible: boolean, sharedMaterial: THREE.MeshStandardMaterial, texturesReady: boolean }) => {
+const SingleBaseModel = observer(({ shape, isVisible, sharedMaterial, texturesReady, onMeshReady }: { shape: any, isVisible: boolean, sharedMaterial: THREE.MeshStandardMaterial, texturesReady: boolean, onMeshReady: (ready: boolean) => void }) => {
   const { dimensionsStore } = useStore();
 
   const glbUrl = useMemo(() => {
@@ -30,13 +30,13 @@ const SingleBaseModel = observer(({ shape, isVisible, sharedMaterial, texturesRe
   const gltf = useGLTF(glbUrl) as any;
 
   const [ready, setReady] = useState(false);
-  const { uiStore } = useStore();
+  // const { uiStore } = useStore();
 
   // Always show loader until both mesh and textures are ready
   useLayoutEffect(() => {
     if (!gltf.scene || !texturesReady) {
       setReady(false);
-      uiStore.setBaseLoading(true);
+      onMeshReady(false);
       return;
     }
 
@@ -49,9 +49,9 @@ const SingleBaseModel = observer(({ shape, isVisible, sharedMaterial, texturesRe
 
     requestAnimationFrame(() => {
       setReady(true);
-      uiStore.setBaseLoading(false);
+      onMeshReady(true);
     });
-  }, [gltf.scene, sharedMaterial, texturesReady, uiStore]);
+  }, [gltf.scene, sharedMaterial, texturesReady, onMeshReady]);
 
 
   const originalPositions = useRef<{ left: number; right: number } | null>(null);
@@ -130,7 +130,6 @@ const SingleBaseModel = observer(({ shape, isVisible, sharedMaterial, texturesRe
   }, [dimensionsStore.length, gltf.scene, isVisible]);
 
   if (!ready || !texturesReady) return null;
-
   return <primitive object={gltf.scene} visible={isVisible} />;
 });
 
@@ -138,7 +137,7 @@ export const BaseModel = observer(() => {
   const { baseStore } = useStore();
   const color = baseStore.selectedBaseColor;
 
-  const { textures, loading } = useTextureNonSuspense({
+  const { textures } = useTextureNonSuspense({
     map: color.baseUrl,
     normalMap: color.normalUrl,
     metalnessMap: color.metalnessUrl,
@@ -152,20 +151,13 @@ export const BaseModel = observer(() => {
     return mat;
   }, [baseStore.selectedBase.id]);
 
-  // Track previous texture state to detect changes
-  const prevTextureRef = useRef<any>(null);
-  const prevLoadingRef = useRef<boolean>(false);
+  // Local state to track mesh readiness
+  const [meshReady, setMeshReady] = useState(false);
 
+  // Spinner is shown if mesh or textures are not ready
   useEffect(() => {
-    // Only set loading spinner when texture is changing (null <-> texture)
-    const hadTexture = !!prevTextureRef.current;
-    const hasTexture = !!textures;
-    if (hadTexture !== hasTexture || prevLoadingRef.current !== loading) {
-      baseStore.root.uiStore.setBaseLoading(loading);
-    }
-    prevTextureRef.current = textures;
-    prevLoadingRef.current = loading;
-  }, [textures, loading, baseStore.root.uiStore]);
+    baseStore.root.uiStore.setBaseLoading(!(meshReady && !!textures));
+  }, [meshReady, textures, baseStore.root.uiStore]);
 
   useLayoutEffect(() => {
     if (!textures) {
@@ -207,6 +199,7 @@ export const BaseModel = observer(() => {
             isVisible={true}
             sharedMaterial={sharedMaterial}
             texturesReady={!!textures}
+            onMeshReady={setMeshReady}
           />
         );
       })}
