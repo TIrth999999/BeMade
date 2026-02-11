@@ -145,7 +145,7 @@ const SingleBaseModel = observer(({ shape, isVisible, sharedMaterial, texturesRe
 
   }, [dimensionsStore.length, gltf.scene, isVisible]);
 
-  if (!ready) return null;
+  if (!ready || !texturesReady) return null;
 
   return <primitive object={gltf.scene} visible={isVisible} />;
 });
