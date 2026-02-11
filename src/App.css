@@ -125,7 +125,7 @@ body {
 }
 
 .canvas-wrapper {
-    flex: 0 0 62%;
+    flex: 0 0 calc(62% - 1.5%);
     position: relative;
     /* background: url("./assets/background/background.svg"); */
     background-size: cover;
