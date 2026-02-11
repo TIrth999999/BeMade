@@ -17,10 +17,45 @@ const SampleItem = React.memo(({
     isSelected: boolean;
     onToggle: (id: string) => void;
 }) => {
+    const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+    const [isMobile, setIsMobile] = useState(false);
+
+    React.useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 768 || 'ontouchstart' in window);
+        };
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
+    const handleMouseMove = (e: React.MouseEvent) => {
+        if (isMobile) return;
+
+        const offset = 20;
+        let x = e.clientX + offset;
+        let y = e.clientY + offset;
+
+        // Tooltip dimensions (approximate)
+        const tooltipWidth = 320;
+        const tooltipHeight = 600;
+
+        if (x + tooltipWidth > window.innerWidth) {
+            x = e.clientX - tooltipWidth - offset;
+        }
+
+        if (y + tooltipHeight > window.innerHeight) {
+            y = window.innerHeight - tooltipHeight - offset;
+        }
+
+        setMousePos({ x, y });
+    };
+
     return (
         <div
             className={`sample-item ${isSelected ? 'selected' : ''}`}
             onClick={() => onToggle(color.id)}
+            onMouseMove={handleMouseMove}
         >
             <div className="sample-image-wrapper">
                 <img
@@ -39,11 +74,23 @@ const SampleItem = React.memo(({
             </div>
             <span className="sample-name">{color.name}</span>
 
-            <div className="sample-hover-box">
-                <img src={color.sample_previewUrl}/>
-                <strong>{color.name}</strong>
-                <p>{color.description}</p>
-            </div>
+            {!isMobile && (
+                <div
+                    className="sample-hover-box"
+                    style={{
+                        position: 'fixed',
+                        left: `${mousePos.x}px`,
+                        top: `${mousePos.y}px`,
+                        pointerEvents: 'none'
+                    }}
+                >
+                    <img src={color.sample_previewUrl} alt={color.name} />
+                    <div className="sample-hover-content">
+                        <strong>{color.name}</strong>
+                        <p>{color.description}</p>
+                    </div>
+                </div>
+            )}
         </div>
     );
 });

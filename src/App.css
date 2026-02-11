@@ -1158,35 +1158,60 @@ body {
 }
 
 .sample-hover-box {
-    position: absolute;
-    top: 13%;
-    left: 88%;
-    transform: translateX(-50%);
-    width: 360px;
-
+    width: 280px;
+    height: 620px;
     background: #ffffff;
-    color: #000000;
-    padding: 8px 10px;
-    border-radius: 6px;
-    font-size: 12px;
-    text-align: center;
-
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    z-index: 2000;
+    transition: opacity 0.2s ease;
     opacity: 0;
     visibility: hidden;
-    pointer-events: none;
-    z-index: 100;
-
-    transition: opacity 0.15s ease, transform 0.15s ease;
-}
-
-.sample-hover-box img {
-    width: 340px;
 }
 
 .sample-item:hover .sample-hover-box {
     opacity: 1;
     visibility: visible;
-    /* transform: translateX(-50%) translateY(-4px); */
+}
+
+.sample-hover-box img {
+    width: 100%;
+    height: 90%;
+    padding: 10px;
+    object-fit: cover;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.sample-hover-content {
+    padding: 16px;
+    background: white;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-align: left;
+}
+
+.sample-hover-content strong {
+    font-size: 14px;
+    color: #000;
+    font-weight: 600;
+}
+
+.sample-hover-content p {
+    font-size: 11px;
+    color: #666;
+    line-height: 1.4;
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .sample-hover-box {
+        display: none !important;
+    }
 }
 
 .sample-image-wrapper {
