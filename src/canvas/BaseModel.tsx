@@ -158,9 +158,20 @@ export const BaseModel = observer(() => {
     return mat;
   }, [baseStore.selectedBase.id]);
 
+  // Track previous texture state to detect changes
+  const prevTextureRef = useRef<any>(null);
+  const prevLoadingRef = useRef<boolean>(false);
+
   useEffect(() => {
-    baseStore.root.uiStore.setBaseLoading(loading);
-  }, [loading, baseStore.root.uiStore]);
+    // Only set loading spinner when texture is changing (null <-> texture)
+    const hadTexture = !!prevTextureRef.current;
+    const hasTexture = !!textures;
+    if (hadTexture !== hasTexture || prevLoadingRef.current !== loading) {
+      baseStore.root.uiStore.setBaseLoading(loading);
+    }
+    prevTextureRef.current = textures;
+    prevLoadingRef.current = loading;
+  }, [textures, loading, baseStore.root.uiStore]);
 
   useLayoutEffect(() => {
     if (!textures) {
@@ -190,8 +201,6 @@ export const BaseModel = observer(() => {
 
     sharedMaterial.needsUpdate = true;
   }, [textures, baseStore.selectedBase.id, sharedMaterial]);
-
-
 
   return (
     <>
