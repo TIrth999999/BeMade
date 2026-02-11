@@ -138,11 +138,11 @@ export const CanvasRoot = observer(() => {
       {isSceneReady && (
         <ContactShadows
           key={shadowKey}
-          position={[0, 0, 0]}
+          position={[0, 0, 0.08]}
           scale={10}
           blur={0.35}
           far={1}
-          opacity={0.7}
+          opacity={0.4}
           frames={1}
         />
       )}
