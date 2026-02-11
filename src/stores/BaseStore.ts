@@ -45,10 +45,18 @@ export class BaseStore {
   }
 
   get selectedBaseColor() {
-    return this.availableColors.find(
+    let color = this.availableColors.find(
       c => c.id === this.root.colorStore.selectedColorId
-    ) ?? this.availableColors[0];
+    );
+
+    if (!color) {
+      color = this.availableColors[0];
+      this.root.colorStore.setColor(color.id);
+    }
+
+    return color;
   }
+
 
   get availableTopShapes() {
     return this.root.topShapeStore.topShapes.filter((t: { id: any }) =>

@@ -13,7 +13,7 @@ export const ColorSelector = observer(() => {
           <div key={c.id}>
             <div
 
-              className={`color-swatch ${colorStore.selectedColorId === c.id ? "active" : ""
+              className={`color-swatch ${colorStore.selectedColorId == c.id ? "active" : ""
                 }`}
               onClick={() => colorStore.setColor(c.id)}
             >          <img src={c.previewUrl} alt={c.name} /> </div>

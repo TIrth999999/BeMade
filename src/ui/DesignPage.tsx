@@ -23,7 +23,6 @@ export const DesignPage = observer(() => {
 
     const handleSelect = (idx: number) => {
         const pos = cameraPositions[idx];
-        console.log("Selected camera position:", pos);
         if (pos) cameraPositionStore.setCameraPosition(pos.name);
     };
 
