@@ -13,12 +13,19 @@ export class UIStore {
 
     isFullscreen: boolean = false;
     isShareModalOpen: boolean = false;
+    isMobile: boolean = window.matchMedia("(max-width: 1024px)").matches || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     isLoggedIn: boolean = localStorage.getItem("isLoggedIn") === "true";
 
     constructor(rootStore: RootStore) {
         this.rootStore = rootStore;
         makeAutoObservable(this);
+
+        window.addEventListener("resize", this.handleResize);
     }
+
+    handleResize = () => {
+        this.isMobile = window.matchMedia("(max-width: 1024px)").matches || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    };
 
     setLoggedIn(val: boolean) {
         this.isLoggedIn = val;

@@ -67,9 +67,22 @@ export const CameraSetup = observer(() => {
       },
     }, 0);
 
+    const baseFov = cameraPositionStore.selectedCameraPosition.fov;
+    const fovBoost = uiStore.isMobile ? (uiStore.isFullscreen ? 40 : 15) : 0;
+    const targetFov = baseFov + fovBoost;
+
+    timeline.to(camera, {
+      fov: targetFov,
+      duration: 1.2,
+      ease: "power2.inOut",
+      onUpdate: () => {
+        camera.updateProjectionMatrix();
+      }
+    }, 0);
+
     tweenRef.current = timeline;
 
-  }, [cameraPositionStore.selectedCameraPositionName]);
+  }, [cameraPositionStore.selectedCameraPositionName, uiStore.isMobile, uiStore.isFullscreen]);
 
 
   return <OrbitControls ref={controlsRef} makeDefault enabled={false} />;

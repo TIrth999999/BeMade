@@ -59,14 +59,11 @@ const ChairLoadingHandler = observer(() => {
 
 export const CanvasRoot = observer(() => {
   const { cameraPositionStore, uiStore, baseStore, chairStore, topShapeStore, dimensionsStore } = useStore();
+  // Ensure we observe isFullscreen here so Canvas re-renders and updates its camera settings
+  const { isFullscreen, isMobile } = uiStore;
   const [dpr, setDpr] = useState(1.5);
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
 
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 1024);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  const fovBoost = isMobile ? (isFullscreen ? 85 : 15) : 0;
 
   const isSceneReady =
     !uiStore.baseLoading &&
@@ -82,7 +79,7 @@ export const CanvasRoot = observer(() => {
   ].join("-");
 
   const baseFov = cameraPositionStore.selectedCameraPosition.fov;
-  const fov = isMobile ? baseFov + 15 : baseFov;
+  const fov = baseFov + fovBoost;
 
   return (
     <Canvas
