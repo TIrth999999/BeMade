@@ -1700,6 +1700,11 @@ body {
     animation: modal-fade-in 0.3s ease;
 }
 
+.share-modal {
+    width: 100%;
+    max-width: 620px;
+}
+
 @keyframes modal-fade-in {
     from {
         opacity: 0;
@@ -1776,6 +1781,48 @@ body {
     }
 
     .copy-btn {
+        padding: 12px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .share-modal {
+        max-width: 100%;
+        max-height: calc(100vh - 32px);
+        padding: 18px;
+        border-radius: 14px;
+        overflow: auto;
+    }
+
+    .share-modal .modal-header {
+        margin-bottom: 12px;
+        align-items: flex-start;
+    }
+
+    .share-modal .modal-header h2 {
+        font-size: 20px;
+        line-height: 1.25;
+        padding-right: 10px;
+    }
+
+    .share-modal .modal-body p {
+        font-size: 14px;
+        margin-bottom: 12px;
+    }
+
+    .share-modal .share-link-container {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .share-modal .share-link-input {
+        width: 100%;
+        font-size: 13px;
+        padding: 11px 12px;
+    }
+
+    .share-modal .copy-btn {
+        width: 100%;
         padding: 12px;
     }
 }
@@ -2199,6 +2246,14 @@ body {
         width: 34px;
         height: 34px;
         margin-top: 10px;
+    }
+
+    .info-icon-tooltip .tooltip-text {
+        left: 50%;
+        top: -8px;
+        transform: translate(-50%, -100%);
+        width: max-content;
+        max-width: 180px;
     }
 }
 

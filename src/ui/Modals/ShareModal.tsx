@@ -2,6 +2,7 @@ import { observer } from "mobx-react-lite";
 import { useStore } from "../../context/StoreContext";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { createPortal } from "react-dom";
 
 export const ShareModal = observer(() => {
     const rootStore = useStore();
@@ -28,7 +29,7 @@ export const ShareModal = observer(() => {
         setTimeout(() => setCopied(false), 2000);
     };
 
-    return (
+    const modal = (
         <div className="modal-overlay" onClick={() => uiStore.setShareModalOpen(false)}>
             <div className="modal-content share-modal" onClick={e => e.stopPropagation()}>
                 <div className="modal-header">
@@ -52,4 +53,10 @@ export const ShareModal = observer(() => {
             </div>
         </div>
     );
+
+    if (typeof document === "undefined") {
+        return modal;
+    }
+
+    return createPortal(modal, document.body);
 });

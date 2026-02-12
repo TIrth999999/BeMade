@@ -1,5 +1,6 @@
 import { useStore } from "../../context/StoreContext";
 import { pdfjs, Document, Page } from "react-pdf";
+import { createPortal } from "react-dom";
 
 interface TableSeatingModalProps {
     isOpen: boolean;
@@ -16,6 +17,11 @@ export const TableSeatingModal = ({ isOpen, onClose }: TableSeatingModalProps) =
 
     const { topShapeStore } = useStore();
     const pdfPath = "/assets/chair_size_chart.pdf";
+    const isMobile = typeof window !== "undefined" && window.innerWidth <= 1024;
+    const pageWidth =
+        typeof window !== "undefined"
+            ? Math.min(window.innerWidth - (isMobile ? 40 : 80), 820)
+            : undefined;
 
     const shapeId = topShapeStore.selectedTopShape.id;
 
@@ -56,28 +62,30 @@ export const TableSeatingModal = ({ isOpen, onClose }: TableSeatingModalProps) =
         }
     }
 
-    return (
+    const modal = (
         <div
             onClick={onClose}
             style={{
                 position: "fixed",
                 inset: 0,
                 backgroundColor: "rgba(0,0,0,0.6)",
-                zIndex: 1000,
+                zIndex: 3000,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 width: "100%",
+                padding: isMobile ? "12px" : "20px",
+                overflowY: "auto",
             }}
         >
             <div
                 onClick={(e) => e.stopPropagation()}
                 style={{
-                    width: "90%",
+                    width: isMobile ? "100%" : "90%",
                     maxWidth: "900px",
-                    maxHeight: "90vh",
+                    maxHeight: isMobile ? "calc(100vh - 24px)" : "90vh",
                     backgroundColor: "#fff",
-                    borderRadius: "8px",
+                    borderRadius: isMobile ? "10px" : "8px",
                     overflow: "hidden",
                     boxShadow: "0 20px 60px rgba(0,0,0,0.4)",
                     display: "flex",
@@ -86,7 +94,7 @@ export const TableSeatingModal = ({ isOpen, onClose }: TableSeatingModalProps) =
             >
                 <div
                     style={{
-                        padding: "14px 18px",
+                        padding: isMobile ? "12px 14px" : "14px 18px",
                         backgroundColor: "#000",
                         color: "#fff",
                         display: "flex",
@@ -94,7 +102,7 @@ export const TableSeatingModal = ({ isOpen, onClose }: TableSeatingModalProps) =
                         alignItems: "center",
                     }}
                 >
-                    <h3 style={{ margin: 0 }}>
+                    <h3 style={{ margin: 0, fontSize: isMobile ? "16px" : "20px", lineHeight: 1.25 }}>
                         Table Size & Seating Chart Info
                     </h3>
 
@@ -104,7 +112,7 @@ export const TableSeatingModal = ({ isOpen, onClose }: TableSeatingModalProps) =
                             background: "transparent",
                             border: "none",
                             color: "#fff",
-                            fontSize: "22px",
+                            fontSize: isMobile ? "20px" : "22px",
                             cursor: "pointer",
                         }}
                     >
@@ -114,7 +122,7 @@ export const TableSeatingModal = ({ isOpen, onClose }: TableSeatingModalProps) =
 
                 <div
                     style={{
-                        padding: "16px",
+                        padding: isMobile ? "10px" : "16px",
                         overflow: "auto",
                         flex: 1,
                     }}
@@ -126,6 +134,7 @@ export const TableSeatingModal = ({ isOpen, onClose }: TableSeatingModalProps) =
                                     pageNumber={pageNumber}
                                     renderTextLayer={false}
                                     renderAnnotationLayer={false}
+                                    width={pageWidth}
                                 />
                             </div>
                         </Document>
@@ -134,4 +143,10 @@ export const TableSeatingModal = ({ isOpen, onClose }: TableSeatingModalProps) =
             </div>
         </div>
     );
+
+    if (typeof document === "undefined") {
+        return modal;
+    }
+
+    return createPortal(modal, document.body);
 };
