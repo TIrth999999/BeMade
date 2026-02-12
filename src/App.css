@@ -1961,11 +1961,14 @@ body {
         white-space: nowrap;
         border-radius: 40px;
         /* margin-left: 20px; */
+        /* margin-right: -0px !important; */
     }
 
     .navbar-right {
-        gap: 12px;
+        /* gap: 12px; */
         /* Tighter spacing for mobile */
+        display: flex;
+        justify-content: flex-end;
     }
 
     .mobile-step-bar {

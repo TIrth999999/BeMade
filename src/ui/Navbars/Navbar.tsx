@@ -92,6 +92,7 @@ export const Navbar = observer(({ activeStep, setActiveStep }: NavbarProps) => {
           {!uiStore.isLoggedIn ? (
             <span
               className="navbar-login-link"
+              id="login-link"
               onClick={() => navigate("/login")}
             >
               Login / Register
