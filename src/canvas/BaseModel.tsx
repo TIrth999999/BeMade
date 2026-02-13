@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import { useGLTF } from "@react-three/drei";
 import { useStore } from "../context/StoreContext";
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import * as THREE from "three";
 import baseShapes from "../data/baseShapes.json";
 import { useTextureNonSuspense } from "../hooks/useTextureNonSuspense";
@@ -54,12 +54,6 @@ const SingleBaseModel = observer(({ shape, isVisible, sharedMaterial, texturesRe
   }, [gltf.scene, sharedMaterial, texturesReady, onMeshReady]);
 
 
-  const originalPositions = useRef<{ left: number; right: number } | null>(null);
-
-  useEffect(() => {
-    if (shape.id !== "linea" && shape.id !== "curva" && shape.id !== "twiste" && shape.id !== "moon") return;
-  }, [glbUrl]);
-
   useLayoutEffect(() => {
     if (!isVisible) return;
     if (shape.id !== "linea" && shape.id !== "curva" && shape.id !== "twiste" && shape.id !== "moon") return;
@@ -67,66 +61,46 @@ const SingleBaseModel = observer(({ shape, isVisible, sharedMaterial, texturesRe
 
     const meshes: any[] = [];
     gltf.scene.traverse((child: any) => {
-      if (child.isMesh) meshes.push(child);
+      if (child.isMesh) {
+        meshes.push(child);
+        // Store original position if not already stored to handle cached GLTF
+        if (child.userData.originalX === undefined) {
+          child.userData.originalX = child.position.x;
+        }
+      }
     });
-    if (meshes.length === 0) return;
 
+    if (meshes.length < 2) return;
+
+    // Identify left and right meshes based on their ORIGINAL positions
     let leftMesh = meshes[0];
     let rightMesh = meshes[0];
-    let leftX = Infinity;
-    let rightX = -Infinity;
-
-
-    if (!originalPositions.current) {
-      meshes.forEach((mesh) => {
-        mesh.geometry.computeBoundingBox();
-        const center = new THREE.Vector3();
-        mesh.geometry.boundingBox.getCenter(center);
-        mesh.localToWorld(center);
-
-        if (center.x < leftX) {
-          leftX = center.x;
-          leftMesh = mesh;
-        }
-        if (center.x > rightX) {
-          rightX = center.x;
-          rightMesh = mesh;
-        }
-      });
-
-      originalPositions.current = {
-        left: leftMesh.position.x,
-        right: rightMesh.position.x,
-      };
-    }
+    let minX = Infinity;
+    let maxX = -Infinity;
 
     meshes.forEach((mesh) => {
-      mesh.geometry.computeBoundingBox();
-      const center = new THREE.Vector3();
-      mesh.geometry.boundingBox.getCenter(center);
-      mesh.localToWorld(center);
-
-      if (center.x < leftX) {
-        leftX = center.x;
+      if (mesh.userData.originalX < minX) {
+        minX = mesh.userData.originalX;
         leftMesh = mesh;
       }
-      if (center.x > rightX) {
-        rightX = center.x;
+      if (mesh.userData.originalX > maxX) {
+        maxX = mesh.userData.originalX;
         rightMesh = mesh;
       }
     });
 
-    let centerX = (leftX + rightX) / 2;
+    // Calculate center based on original bounds
+    const originalCenter = (minX + maxX) / 2;
+    const maxShift = originalCenter - minX;
 
-    const maxShift = (centerX - leftX);
+    // Cap the shiftFactor at 0.45 to ensure they never fully collide
+    // 3100 is the reference length where they are at original position
+    const rawShiftFactor = 1 - Math.min(dimensionsStore.length, 3100) / 3100;
+    const shiftFactor = Math.min(rawShiftFactor, 0.35);
 
-    const shiftFactor = 1 - Math.min(dimensionsStore.length, 3100) / 3100;
-
-    if (originalPositions.current) {
-      leftMesh.position.x = originalPositions.current.left + maxShift * shiftFactor;
-      rightMesh.position.x = originalPositions.current.right - maxShift * shiftFactor;
-    }
-
+    // Apply shift relative to original positions
+    leftMesh.position.x = leftMesh.userData.originalX + maxShift * shiftFactor;
+    rightMesh.position.x = rightMesh.userData.originalX - maxShift * shiftFactor;
   }, [dimensionsStore.length, gltf.scene, isVisible]);
 
   if (!ready || !texturesReady) return null;
